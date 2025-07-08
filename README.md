@@ -14,6 +14,13 @@ It uses AI to evaluate Speaking skills, visualize learning progress, and improve
 
 ---
 
+## 🎨 UI Design (Figma)
+
+👉 [Figma Prototype](https://www.figma.com/design/Y2hHstQe0XgOFyVnlK3Ru2/Linglooma?node-id=0-1&t=1KkpUqhxLMWYtM7u-1)
+
+
+---
+
 ## 🧩 Key Features
 
 👩‍🎓 **For Students**  
@@ -68,13 +75,6 @@ It uses AI to evaluate Speaking skills, visualize learning progress, and improve
 | Database  | PostgreSQL               |
 | Security  | JWT, OAuth 2.0, HTTPS            |
 | Others    | REST API, Docker, WebSocket (opt)|
-
----
-
-## 🎨 UI Design (Figma)
-
-👉 [Figma Prototype](https://www.figma.com/design/Y2hHstQe0XgOFyVnlK3Ru2/Linglooma?node-id=0-1&t=1KkpUqhxLMWYtM7u-1)
-
 
 ---
 
