@@ -55,16 +55,6 @@ It uses AI to evaluate Speaking skills, visualize learning progress, and improve
 
 ---
 
-## 🖥️ System Architecture
-
-- **Frontend**: React SPA with Bootstrap 5  
-- **Backend**: Node.js + Express (REST API)  
-- **Database**: MySQL / PostgreSQL  
-- **AI Integration**: Azure Cognitive Services  
-- **Deployment**: Docker + Cloud Ready (AWS/Azure)
-
----
-
 ## ⚙️ Tech Stack
 
 | Layer     | Technology                       |
@@ -78,6 +68,46 @@ It uses AI to evaluate Speaking skills, visualize learning progress, and improve
 
 ---
 
+## 📁 Project Directory Structure
+
+```bash
+Linglooma-IELTS/
+├── frontend-react/               # React frontend application
+│   ├── cypress/                     # Cypress end-to-end tests
+│   ├── public/
+│   └── src/
+│       ├── components/
+│       │   ├── common/
+│       │   ├── context/
+│       │   ├── lib/
+│       │   └── ui/
+│       ├── pages/
+│       │   ├── Admin/
+│       │   ├── Auth/
+│       │   ├── Dashboard/
+│       │   ├── Features/
+│       │   ├── Home/
+│       │   ├── Settings/
+│       │   └── ViewResults/
+│       ├── styles/
+│       │   ├── index.css
+│       │   └── tailwind.css
+│       ├── utils/                  # Axios customization, utilities
+│       │   └── axios.customize.js
+│       ├── App.jsx
+│       ├── Routes.jsx
+│       └── main.jsx
+│
+├── backend-nodejs/
+│   ├── configs/
+│   ├── controllers/               # Express route controllers
+│   ├── middleware/                # Auth, logging middleware, etc.
+│   ├── models/                    # Database models
+│   ├── routes/                    # API route handlers
+│   ├── services/                  # Business logic/services
+│   ├── test/                      # Backend tests
+│   └── utils/                     # Utility/helper functions
+ ``` 
 ## 🛠 How to Run Locally
 
 ```bash
