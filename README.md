@@ -43,7 +43,7 @@ It uses AI to evaluate Speaking skills, visualize learning progress, and improve
 
 - **Writing Evaluation**: Azure Text Analytics (grammar, coherence, vocabulary)  
 - **Speaking Evaluation**: Azure Speech-to-Text (fluency, pronunciation, intonation)  
-- **Feedback Generation**: Automatically generated based on IELTS criteria  
+- **Feedback Generation**: Personalized feedback is generated using Google's Gemini AI, based on IELTS pronunciation scoring criteria and expert teaching patterns  
 
 ---
 
@@ -61,8 +61,8 @@ It uses AI to evaluate Speaking skills, visualize learning progress, and improve
 |-----------|----------------------------------|
 | Frontend  | React, Bootstrap, HTML, CSS      |
 | Backend   | Node.js, Express.js              |
-| AI Engine | Azure Text Analytics, Speech     |
-| Database  | PostgreSQL               |
+| AI Engine | Azure Text Analytics, Gemini API |
+| Database  | PostgreSQL                       |
 | Security  | JWT, OAuth 2.0, HTTPS            |
 | Others    | REST API, Docker, WebSocket (opt)|
 
