@@ -43,12 +43,10 @@ exports.scoreAudio = async (req, res) => {
   transcriptText,
   miscueWords: miscueWordsFromTranscript,
 });
-
-    console.log("Gemini feedback:", geminiFeedback);
     res.json({
       score: ieltsResult.band,
       rawScore: ieltsResult.totalScore,
-      feedback: ieltsResult.feedback,
+      feedback: geminiFeedback || "Không có phản hồi từ Gemini",
       accuracyScore: assessment.AccuracyScore || null,
       fluencyScore: assessment.FluencyScore || null,
       completenessScore: assessment.CompletenessScore || null,
