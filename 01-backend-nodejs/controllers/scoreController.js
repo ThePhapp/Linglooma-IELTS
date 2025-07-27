@@ -6,8 +6,8 @@ const { calculateIELTSBand } = require("../services/ieltsScoringService");
 const { findMismatchedWords } = require("../services/miscueService");
 const { analyzePhonemes } = require("../utils/analyzePhonemes");
 const { vietnameseWordsAssessment } = require("../utils/wordsAssessmentHelper");
-const { countPhonemeErrors } = require('../utils/phonemeErrorCounter');;
-
+const { countPhonemeErrors } = require('../utils/phonemeErrorCounter');
+const { getGeminiFeedback } = require("../services/geminiFeedbackService");
 
 exports.scoreAudio = async (req, res) => {
   try {
@@ -36,11 +36,15 @@ exports.scoreAudio = async (req, res) => {
     const ieltsResult = calculateIELTSBand(assessment);
     const phonemeDetails = analyzePhonemes(assessment);
     const wordsAssessmentVn = vietnameseWordsAssessment(wordsAssessment);
-
     const errorMap = countPhonemeErrors(wordsAssessment);
-    //console.log(errorMap);
-    //console.log(JSON.stringify(wordsAssessment, null, 2));
+    const geminiFeedback = await getGeminiFeedback({
+  ieltsResult,
+  assessment,
+  transcriptText,
+  miscueWords: miscueWordsFromTranscript,
+});
 
+    console.log("Gemini feedback:", geminiFeedback);
     res.json({
       score: ieltsResult.band,
       rawScore: ieltsResult.totalScore,
