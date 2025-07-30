@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import SidebarLink from "./sidebar-link";
+import SidebarLink from "./Sidebar-link";
 import { Home, BookOpen, BarChart2, Settings, ClipboardList } from "lucide-react";
 
 

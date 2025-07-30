@@ -1,3 +1,4 @@
+version: "3.8"
 services:
   backend:
     build:
@@ -8,26 +9,36 @@ services:
       - "3000:3000"
     depends_on:
       - db
+    volumes:
+      - ./01-backend-nodejs:/app
+      - /app/node_modules
+    restart: unless-stopped
 
   frontend:
     build:
-      context: ./00-fontend-react
+      context: ./00-frontend-react
     env_file:
-      - ./00-fontend-react/.env
+      - ./00-frontend-react/.env
     ports:
       - "80:80"
     depends_on:
       - backend
+    restart: unless-stopped
 
   db:
     image: postgres:15
+    env_file:
+      - ./01-backend-nodejs/.env
     environment:
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres123
+      POSTGRES_DB: linglooma
     volumes:
       - db_data:/var/lib/postgresql/data
-      - ./backend-nodejs/02-database-postgresql/linglooma_update.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./02-database-postgresql/linglooma_update.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
 
 volumes:
   db_data:
