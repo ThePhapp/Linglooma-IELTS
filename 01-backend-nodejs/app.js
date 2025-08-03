@@ -4,7 +4,7 @@ const app = express();
 app.use(express.json({ limit: "50mb" })); // tăng giới hạn size vì audio base64 có thể lớn
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 const corsOptions = {
-  origin: 'http://localhost:4028',
+  origin: 'http://localhost',
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
