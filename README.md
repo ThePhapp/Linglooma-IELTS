@@ -57,14 +57,15 @@ It uses AI to evaluate Speaking skills, visualize learning progress, and improve
 
 ## ⚙️ Tech Stack
 
-| Layer     | Technology                       |
-|-----------|----------------------------------|
-| Frontend  | React, Bootstrap, HTML, CSS      |
-| Backend   | Node.js, Express.js              |
-| AI Engine | Azure Text Analytics, Gemini API |
-| Database  | PostgreSQL                       |
-| Security  | JWT, OAuth 2.0, HTTPS            |
-| Others    | REST API, Docker, WebSocket (opt)|
+| Layer     | Technology                                      |
+|-----------|-------------------------------------------------|
+| Frontend  | React, Bootstrap, HTML, CSS                     |
+| Backend   | Node.js, Express.js                             |
+| AI Engine | Azure Text Analytics, Gemini API                |
+| Database  | PostgreSQL                                      |
+| Security  | JWT, OAuth 2.0, HTTPS                           |
+| Testing   | Cypress (E2E, Frontend), Jest (Backend)          |
+| Others    | REST API, Docker, WebSocket (optional)          |
 
 ---
 
