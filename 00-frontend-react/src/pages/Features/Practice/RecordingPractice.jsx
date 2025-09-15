@@ -10,7 +10,7 @@ import { useParams } from "react-router-dom";
 
 
 
-const RecordingPractice = ({ currentQuestion, referenceText, onScore, currentIndex }) => {
+const RecordingPractice = ({ currentQuestion, referenceText, onScore, currentIndex, setLoading }) => {
   const [lessonImage, setLessonImage] = useState(null);
   const [recording, setRecording] = useState(false);
   const [audioURL, setAudioURL] = useState(null);
@@ -100,6 +100,7 @@ const RecordingPractice = ({ currentQuestion, referenceText, onScore, currentInd
     }
 
     setStatus("Sending audio to server...");
+    setLoading(true);
 
     try {
       const blob = recorderRef.current.getBlob();
@@ -155,6 +156,8 @@ const RecordingPractice = ({ currentQuestion, referenceText, onScore, currentInd
       setStatus("Connection error: " + err.message);
       toast.error(err.message);
       setScoreData(null);
+    } finally {
+      setLoading(false);
     }
   };
 

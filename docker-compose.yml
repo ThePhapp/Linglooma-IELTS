@@ -10,7 +10,7 @@ services:
     depends_on:
       - db
     volumes:
-      - ./01-backend-nodejs:/app
+      - ./01-backend-nodejs:/app/src
       - /app/node_modules
     restart: unless-stopped
 
