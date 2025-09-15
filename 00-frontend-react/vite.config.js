@@ -24,6 +24,12 @@ export default defineConfig({
     port: "4028",
     host: 'localhost',
     strictPort: true,
+     proxy: {
+      '/api': {
+        target: 'http://backend:3000',  // service backend trong docker-compose
+        changeOrigin: true,
+      },
+    },
     // host: "0.0.0.0",
     // allowedHosts: ['.amazonaws.com', '.builtwithrocket.new']
   }
