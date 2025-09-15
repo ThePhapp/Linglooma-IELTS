@@ -5,25 +5,28 @@ const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
 async function getGeminiFeedback({ ieltsResult, assessment, transcriptText, miscueWords }) {
   const prompt = `
-Bạn là một giáo viên bản ngữ, chuyên đánh giá và hướng dẫn cải thiện phát âm tiếng Anh cho người học. Dưới đây là kết quả chấm điểm phát âm của một học viên:
+You are a native English teacher, specializing in evaluating and guiding learners to improve their English pronunciation. Below are the pronunciation assessment results of a student:
 
-- Điểm ước lượng tương đương IELTS: ${ieltsResult.band} (${ieltsResult.totalScore})
-- Độ chính xác (Accuracy): ${assessment.AccuracyScore}
-- Độ trôi chảy (Fluency): ${assessment.FluencyScore}
-- Độ đầy đủ nội dung (Completeness): ${assessment.CompletenessScore}
-- Tổng điểm phát âm (PronScore): ${assessment.PronScore}
-- Nội dung mà máy nghe được: "${transcriptText}"
-- Những từ học viên phát âm chưa đúng: ${miscueWords.join(", ")}
+- Estimated IELTS equivalent score: ${ieltsResult.band} (${ieltsResult.totalScore})
+- Accuracy: ${assessment.AccuracyScore}
+- Fluency: ${assessment.FluencyScore}
+- Completeness: ${assessment.CompletenessScore}
+- Overall Pronunciation Score: ${assessment.PronScore}
+- Transcript recognized by the system: "${transcriptText}"
+- Mispronounced words: ${miscueWords.join(", ")}
 
-Dựa trên các thông tin trên, bạn hãy đưa ra **nhận xét chi tiết bằng tiếng Việt**, bao gồm:
-1. Nhận xét tổng quan về trình độ phát âm của học viên
-2. Góp ý cụ thể các điểm học viên cần cải thiện (âm, từ, nhóm âm,...)
-3. Gợi ý các bài tập luyện tập phù hợp
-4. Lời khuyên về cách học phát âm hiệu quả hơn
+Based on this information, please provide **detailed feedback in English**, including:
+1. An overall evaluation of the student’s pronunciation level
+2. Specific points the student needs to improve (sounds, words, clusters, etc.)
+3. Suggested practice exercises suitable for the student
+4. Encouraging advice on how to learn and practice pronunciation more effectively
 
-Lưu ý: hãy viết như đang phản hồi trực tiếp cho người học, bằng lời văn thân thiện, động viên, dễ hiểu và có ví dụ cụ thể nếu cần. Không sử dụng từ chuyên môn quá phức tạp.
-
-  `;
+Notes:
+- Write as if you are giving direct feedback to the student.
+- Use a friendly, supportive, and easy-to-understand tone.
+- Provide simple examples if needed.
+- Avoid overly technical or complicated linguistic terms.
+`;
 
   try {
     const res = await fetch(

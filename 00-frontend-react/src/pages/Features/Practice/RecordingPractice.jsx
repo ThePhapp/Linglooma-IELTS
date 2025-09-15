@@ -7,6 +7,7 @@ import TextToSpeechButton from "./TextToSpeechButton";
 import axios from "@/utils/axios.customize";
 import { toast } from "react-toastify";
 import { useParams } from "react-router-dom";
+import ResultPDFDownloader from "./ResultPDFDownloader";
 
 
 
@@ -230,6 +231,7 @@ const RecordingPractice = ({ currentQuestion, referenceText, onScore, currentInd
           >
             Submit
           </Button>
+          <ResultPDFDownloader scoreData={scoreData} />
         </div>
 
         <p className="text-center font-semibold text-gray-700">{status}</p>

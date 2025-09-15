@@ -18,6 +18,8 @@
     "axios": "^1.9.0",
     "clsx": "^2.1.1",
     "cypress": "^14.3.3",
+    "jspdf": "^3.0.2",
+    "jspdf-autotable": "^5.0.2",
     "linglooma_ielts_team5": "file:",
     "lucide-react": "^0.510.0",
     "prop-types": "^15.8.1",
