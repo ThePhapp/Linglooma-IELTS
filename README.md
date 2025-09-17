@@ -23,17 +23,18 @@ It uses AI to evaluate Speaking skills, visualize learning progress, and improve
 
 ## 🧩 Key Features
 
-👩‍🎓 **For Students**  
+ **For Students**  
 - Submit writing and speaking tasks  
 - Receive AI-generated scores and feedback  
-- Track learning progress with visual dashboards  
+- Track learning progress with visual dashboards
+- Chatting with AI by voice chat  
 
-👨‍🏫 **For Teachers**  
+ **For Teachers**  
 - Create and assign exercises  
 - View and comment on student submissions  
 - Track student performance and progress  
 
-🔐 **For Admins**  
+ **For Admins**  
 - Manage users and roles  
 - View system-wide performance metrics  
 
