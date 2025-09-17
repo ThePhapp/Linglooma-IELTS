@@ -25,6 +25,9 @@ const Sidebar = () => {
                     >
                         Features
                     </SidebarLink>
+                    <SidebarLink href="/admin/ai-chat" icon={<BarChart2 className="h-5 w-5" />}>
+                        AI Chat
+                    </SidebarLink>
                     <SidebarLink href="/admin/view-results" icon={<BarChart2 className="h-5 w-5" />}>
                         Results View
                     </SidebarLink>

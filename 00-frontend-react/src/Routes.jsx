@@ -14,6 +14,7 @@ import IeltsSpeakingPractice from './pages/Features/Practice';
 import PageRegister from './pages/Auth/Register';
 import { ToastContainer } from 'react-toastify';
 import PronunciationFeedback from './pages/Features/Feedback';
+import VoiceChat from "./pages/AiChat/VoiceChat";
 
 const AppRoutes = () => {
   return (
@@ -27,6 +28,7 @@ const AppRoutes = () => {
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="features" element={<Skill4 />} />
           <Route path="features/lesson" element={<LessonSpeaking />} />
+          <Route path="ai-chat" element={<VoiceChat />} />
           <Route path="view-results" element={<ViewResultsPage />} />
           <Route path="settings" element={<SettingsPage />} />
           <Route path="features/practice/:lessonId" element={<IeltsSpeakingPractice />} />
