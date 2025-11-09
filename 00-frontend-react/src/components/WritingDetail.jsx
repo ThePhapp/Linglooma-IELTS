@@ -113,7 +113,7 @@ const WritingDetail = () => {
 
         {/* Prompt */}
         <div className="mb-8 p-4 bg-blue-50 rounded-lg">
-          <h3 className="font-semibold text-gray-800 mb-2">📋 Original Prompt:</h3>
+          <h3 className="font-semibold text-gray-800 mb-2">Original Prompt:</h3>
           <p className="text-gray-700 whitespace-pre-line">{detail.prompt_text}</p>
           <div className="mt-2 text-sm text-gray-600">
             Required: Minimum {detail.word_limit} words
@@ -122,7 +122,7 @@ const WritingDetail = () => {
 
         {/* Student's Essay */}
         <div className="mb-8">
-          <h3 className="text-xl font-semibold mb-3">✍️ Your Essay ({detail.word_count} words)</h3>
+          <h3 className="text-xl font-semibold mb-3">Your Essay ({detail.word_count} words)</h3>
           <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
             <p className="text-gray-800 whitespace-pre-line leading-relaxed">{detail.essay_text}</p>
           </div>
@@ -169,20 +169,20 @@ const WritingDetail = () => {
 
             {/* Overall Feedback */}
             <div className="mb-6">
-              <h3 className="text-xl font-semibold mb-2">📊 Overall Feedback</h3>
+              <h3 className="text-xl font-semibold mb-2">Overall Feedback</h3>
               <p className="text-gray-700 bg-blue-50 p-4 rounded-lg">{detail.overall_feedback}</p>
             </div>
 
             {/* Strengths & Weaknesses */}
             <div className="grid md:grid-cols-2 gap-6 mb-8">
               <div>
-                <h3 className="text-xl font-semibold mb-2 text-green-700">✅ Strengths</h3>
+                <h3 className="text-xl font-semibold mb-2 text-green-700">Strengths</h3>
                 <div className="bg-green-50 p-4 rounded-lg">
                   <p className="text-gray-700 whitespace-pre-line">{detail.strengths}</p>
                 </div>
               </div>
               <div>
-                <h3 className="text-xl font-semibold mb-2 text-red-700">⚠️ Areas to Improve</h3>
+                <h3 className="text-xl font-semibold mb-2 text-red-700">Areas to Improve</h3>
                 <div className="bg-red-50 p-4 rounded-lg">
                   <p className="text-gray-700 whitespace-pre-line">{detail.weaknesses}</p>
                 </div>

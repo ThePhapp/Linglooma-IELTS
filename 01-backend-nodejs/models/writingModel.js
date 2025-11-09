@@ -66,8 +66,7 @@ async function submitWriting({ promptId, studentId, essayText }) {
     ]);
     const submission = submissionResult.rows[0];
     
-    // Gọi AI để chấm bài
-    console.log('Calling Gemini AI to evaluate essay...');
+    console.log('Calling AI to evaluate essay...');
     const evaluation = await evaluateWritingWithGemini({
       taskType: prompt.task_type,
       promptText: prompt.prompt_text,
@@ -206,11 +205,36 @@ async function getSubmissionDetail(submissionId, studentId) {
   
   const row = result.rows[0];
   
-  // Parse JSON fields
+  // Parse JSON fields safely
+  let grammarErrors = [];
+  let vocabSuggestions = [];
+  
+  try {
+    if (row.grammar_errors) {
+      grammarErrors = typeof row.grammar_errors === 'string' 
+        ? JSON.parse(row.grammar_errors) 
+        : row.grammar_errors;
+    }
+  } catch (err) {
+    console.error('Error parsing grammar_errors:', err);
+    grammarErrors = [];
+  }
+  
+  try {
+    if (row.vocabulary_suggestions) {
+      vocabSuggestions = typeof row.vocabulary_suggestions === 'string' 
+        ? JSON.parse(row.vocabulary_suggestions) 
+        : row.vocabulary_suggestions;
+    }
+  } catch (err) {
+    console.error('Error parsing vocabulary_suggestions:', err);
+    vocabSuggestions = [];
+  }
+  
   return {
     ...row,
-    grammar_errors: row.grammar_errors ? JSON.parse(row.grammar_errors) : [],
-    vocabulary_suggestions: row.vocabulary_suggestions ? JSON.parse(row.vocabulary_suggestions) : []
+    grammar_errors: grammarErrors,
+    vocabulary_suggestions: vocabSuggestions
   };
 }
 

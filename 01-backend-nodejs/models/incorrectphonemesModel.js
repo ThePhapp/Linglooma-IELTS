@@ -106,6 +106,27 @@ const getIncorrectPhonemesOfLesson = async (studentId, lessonResultId) => {
 
 const getTopIncorrectPhonemesWithAvgScore = async (lessonResultId) => {
   try {
+    // First, get lesson info separately to ensure we always have it
+    const lessonInfoResult = await client.query(
+      `
+      SELECT
+        lr.id,
+        lr.lessonid,
+        lr.finishedtime,
+        lr.averagescore,
+        l.name as lesson_name,
+        l.type as lesson_type,
+        (SELECT COUNT(*) FROM question WHERE lessonid = lr.lessonid) as question_count
+      FROM lessonresult lr
+      LEFT JOIN lesson l ON lr.lessonid = l.id
+      WHERE lr.id = $1
+      `,
+      [lessonResultId]
+    );
+
+    const lessonInfo = lessonInfoResult.rows[0] || null;
+
+    // Then get phoneme data
     const result = await client.query(
       `
       WITH PhonemeCounts AS (
@@ -164,7 +185,16 @@ const getTopIncorrectPhonemesWithAvgScore = async (lessonResultId) => {
     `,
       [lessonResultId]
     );
-    return result.rows;
+
+    // Attach lesson info to each row
+    return result.rows.map(row => ({
+      ...row,
+      lesson_name: lessonInfo?.lesson_name,
+      lesson_type: lessonInfo?.lesson_type,
+      finishedtime: lessonInfo?.finishedtime,
+      lesson_score: lessonInfo?.averagescore,
+      question_count: lessonInfo?.question_count
+    }));
   } catch (error) {
     console.error("Error in getTopIncorrectPhonemesWithAvgScore:", error);
     throw error;

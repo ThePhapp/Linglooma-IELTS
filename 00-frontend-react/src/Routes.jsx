@@ -21,6 +21,7 @@ import WritingList from './components/WritingList';
 import WritingEditor from './components/WritingEditor';
 import WritingHistory from './components/WritingHistory';
 import WritingDetail from './components/WritingDetail';
+import SpeakingHistory from './components/SpeakingHistory';
 
 const AppRoutes = () => {
   return (
@@ -34,6 +35,7 @@ const AppRoutes = () => {
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="features" element={<Skill4 />} />
           <Route path="features/lesson" element={<LessonSpeaking />} />
+          <Route path="features/speaking/history" element={<SpeakingHistory />} />
           <Route path="features/reading" element={<ReadingList />} />
           <Route path="features/reading/:id" element={<ReadingTest />} />
           <Route path="features/writing" element={<WritingList />} />

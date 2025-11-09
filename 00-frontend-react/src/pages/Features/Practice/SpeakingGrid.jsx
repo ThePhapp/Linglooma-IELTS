@@ -22,20 +22,10 @@ const SpeakingGrid = ({ setCurrentQuestion, setCurrentIndex }) => {
 
     const navigate = useNavigate();
     const { lessonId } = useParams();
-    const [showConfirm, setShowConfirm] = useState(false);
 
     const [activeNumber, setActiveNumber] = useState(1);
     const [questions, setQuestions] = useState([]);
     const [lessonTitle, setLessonTitle] = useState("");
-
-    // Confirm feedback
-    const handleFeedbackClick = () => {
-        if (questions.length > 0 && activeNumber < questions.length) {
-            setShowConfirm(true); // Hiện confirm
-        } else {
-            navigate(`/admin/features/feedback/${lessonId}`);
-        }
-    };
 
     const handleClick = (index) => {
         setActiveNumber(index + 1);
@@ -103,35 +93,13 @@ const SpeakingGrid = ({ setCurrentQuestion, setCurrentIndex }) => {
                         />
                     ))}
                 </div>
-                <div className="flex  gap-10">
-                    <Button variant="primary" className="mt-5" onClick={handleFeedbackClick}>
-                        Feedback
+                <div className="flex gap-10">
+                    <Button variant="primary" className="mt-5" onClick={() => navigate("/admin/features/speaking/history")}>
+                        View History
                     </Button>
                     <Button variant="primary" className="mt-5" onClick={() => navigate("/admin/features/lesson")}>
                         Exit
                     </Button>
-                    {showConfirm && (
-                        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                            <div className="bg-white p-6 rounded-lg shadow-lg max-w-[400px] w-full">
-                                <h2 className="text-xl font-semibold mb-4">Bạn chưa làm xong tất cả các câu</h2>
-                                <p className="mb-4">Bạn vẫn muốn xem feedback chứ?</p>
-                                <div className="flex justify-end gap-4">
-                                    <Button
-                                        variant="secondary"
-                                        onClick={() => setShowConfirm(false)}
-                                    >
-                                        Close
-                                    </Button>
-                                    <Button
-                                        variant="primary"
-                                        onClick={() => navigate(`/admin/features/feedback/${lessonId}`)}
-                                    >
-                                        Submit
-                                    </Button>
-                                </div>
-                            </div>
-                        </div>
-                    )}
                 </div>
             </div>
         </section>

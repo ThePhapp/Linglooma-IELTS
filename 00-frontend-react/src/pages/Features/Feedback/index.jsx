@@ -8,9 +8,11 @@ const PronunciationFeedback = () => {
   const navigate = useNavigate();
   const { lessonId } = useParams();
   const [questions, setQuestions] = useState([]);
+  const [lessonInfo, setLessonInfo] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showChart, setShowChart] = useState(false);
+  const [isDemo, setIsDemo] = useState(false);
 
   // Tính điểm trung bình bài
   const calculateAverageScore = (questions) => {
@@ -29,12 +31,37 @@ const PronunciationFeedback = () => {
       setLoading(true);
       try {
         const res = await axios.get(`/api/incorrectphonemes/feedback-summary?lessonResultId=` + lessonId);
-        setQuestions(Array.isArray(res) ? res : []);
+        
+        console.log('📥 Feedback API Response:', res);
+        
+        // Handle new response format with lessonInfo and questions
+        if (res.lessonInfo !== undefined) {
+          console.log('✅ New format detected - lessonInfo:', res.lessonInfo);
+          console.log('✅ Questions:', res.questions);
+          console.log('✅ Is Demo:', res.isDemo);
+          setLessonInfo(res.lessonInfo);
+          setQuestions(Array.isArray(res.questions) ? res.questions : []);
+          setIsDemo(res.isDemo || false);
+        } else if (Array.isArray(res)) {
+          // Fallback for old format (backward compatibility)
+          console.log('⚠️ Old format detected - array response');
+          setQuestions(res);
+          setLessonInfo(null);
+          setIsDemo(false);
+        } else {
+          console.log('❌ Unknown response format:', res);
+          setQuestions([]);
+          setLessonInfo(null);
+          setIsDemo(false);
+        }
+        
         setError(null);
       } catch (err) {
-        console.error(err);
+        console.error('❌ Error fetching feedback:', err);
         setError(err?.error || err.message || "Unknown error");
         setQuestions([]);
+        setLessonInfo(null);
+        setIsDemo(false);
       } finally {
         setLoading(false);
       }
@@ -66,6 +93,65 @@ const PronunciationFeedback = () => {
 
   return (
     <section className="mx-auto w-full max-w-none min-w-[779px] max-md:p-2.5 max-md:max-w-[991px] max-md:min-w-[auto] max-sm:max-w-screen-sm">
+      {/* Demo Data Warning */}
+      {isDemo && (
+        <div className="mb-4 bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded">
+          <div className="flex items-center">
+            <div className="flex-shrink-0">
+              <span className="text-2xl">⚠️</span>
+            </div>
+            <div className="ml-3">
+              <p className="text-sm text-yellow-800">
+                <strong>Demo Data:</strong> No real practice data found for this lesson. Showing sample feedback for demonstration purposes.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Lesson Info Header */}
+      {lessonInfo && (
+        <div className="mb-6 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg p-6 shadow-lg">
+          <div className="flex justify-between items-start max-md:flex-col max-md:gap-4">
+            <div className="flex-1">
+              <h1 className="text-3xl font-bold mb-2">📖 {lessonInfo.lessonName || `Lesson ${lessonId}`}</h1>
+              <div className="flex flex-wrap gap-4 text-sm">
+                <div className="flex items-center gap-2">
+                  <span className="opacity-90">📅 Completed:</span>
+                  <span className="font-semibold">
+                    {lessonInfo.finishedTime 
+                      ? new Date(lessonInfo.finishedTime).toLocaleString('en-US', {
+                          year: 'numeric',
+                          month: 'short',
+                          day: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        })
+                      : 'N/A'}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="opacity-90">❓ Questions:</span>
+                  <span className="font-semibold">{lessonInfo.questionCount || 0}</span>
+                </div>
+                {lessonInfo.lessonType && (
+                  <div className="flex items-center gap-2">
+                    <span className="opacity-90">📚 Type:</span>
+                    <span className="font-semibold">{lessonInfo.lessonType}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+            <div className="text-center bg-white bg-opacity-20 rounded-lg p-4 min-w-[120px]">
+              <div className="text-4xl font-bold">
+                {lessonInfo.lessonScore ? roundToHalf(lessonInfo.lessonScore).toFixed(1) : 'N/A'}
+              </div>
+              <div className="text-sm opacity-90">Overall Score</div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <header className="flex justify-between items-center px-1.5 py-3 text-lg font-bold border-b border-solid border-b-black max-sm:flex-wrap max-sm:gap-2.5 mr-24">
         <div className="p-3.5 bg-white rounded max-sm:w-full max-sm:text-center">Question</div>
         <div className="p-3.5 bg-white rounded max-sm:w-full max-sm:text-center">False Words</div>

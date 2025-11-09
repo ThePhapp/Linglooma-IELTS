@@ -35,9 +35,36 @@ const getRecentlyLessonResult = async (studentId) => {
     );
 }
 
+async function getSpeakingHistory(studentId) {
+  try {
+    console.log('🗄️ Database query for studentId:', studentId);
+    const query = `
+      SELECT 
+        lr.id,
+        lr.lessonid as lesson_id,
+        lr.finishedtime as completed_at,
+        lr.averagescore as ielts_band,
+        lr.feedback,
+        l.name as lesson_title,
+        (SELECT COUNT(*) FROM question WHERE lessonid = lr.lessonid) as question_count
+      FROM lessonresult lr
+      LEFT JOIN lesson l ON lr.lessonid = l.id
+      WHERE lr.studentid = $1
+      ORDER BY lr.finishedtime DESC
+    `;
+    
+    const res = await client.query(query, [studentId]);
+    console.log('✅ Database returned', res.rows.length, 'rows');
+    return res.rows;
+  } catch (error) {
+    console.error('❌ Database error in getSpeakingHistory:', error.message);
+    throw error;
+  }
+}
 
 module.exports = {
     insertLessonResult,
     getLessonResult,
-    getRecentlyLessonResult
+    getRecentlyLessonResult,
+    getSpeakingHistory
 };

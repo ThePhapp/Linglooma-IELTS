@@ -8,13 +8,19 @@ const LessonSpeaking = () => {
 
     return (
         <main className="p-6 w-full bg-white min-h-screen">
-            {/* Exit button */}
-            <div className="mb-6">
+            {/* Header with Exit and History buttons */}
+            <div className="mb-6 flex justify-between items-center">
                 <button
-                    className="px-6 py-3 text-sm font-semibold text-white bg-slate-500 rounded-md"
+                    className="px-6 py-3 text-sm font-semibold text-white bg-slate-500 rounded-md hover:bg-slate-600 transition"
                     onClick={() => navigate("/admin/features")}
                 >
                     EXIT
+                </button>
+                <button
+                    className="px-6 py-3 text-sm font-semibold text-white bg-purple-600 rounded-md hover:bg-purple-700 transition"
+                    onClick={() => navigate("/admin/features/speaking/history")}
+                >
+                    View My History
                 </button>
             </div>
 

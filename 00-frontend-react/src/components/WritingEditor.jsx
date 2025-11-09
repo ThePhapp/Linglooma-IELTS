@@ -280,7 +280,7 @@ const WritingEditor = () => {
               onClick={() => navigate('/admin/features/writing')}
               className="flex-1 bg-gray-600 hover:bg-gray-700 text-white font-semibold py-3 px-6 rounded-lg transition"
             >
-              📚 Back to Prompts
+              Back to Prompts
             </button>
           </div>
         </div>

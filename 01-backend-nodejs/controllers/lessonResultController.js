@@ -1,4 +1,4 @@
-const { insertLessonResult, getLessonResult, getRecentlyLessonResult } = require('../models/lessonResultModel');
+const { insertLessonResult, getLessonResult, getRecentlyLessonResult, getSpeakingHistory } = require('../models/lessonResultModel');
 
 const insertLessonResultController = async (req, res) => {
   const { studentId, lessonId, finishedTime, averageScore, feedback } = req.body;
@@ -47,8 +47,34 @@ const getRecentlyLessonResultController = async (req, res) => {
   }
 };
 
+const getSpeakingHistoryController = async (req, res) => {
+  try {
+    console.log('🔍 Getting speaking history for user:', req.user);
+    const studentId = req.user.id; // From JWT middleware
+    
+    if (!studentId) {
+      console.error('❌ No studentId found in JWT token');
+      return res.status(401).json({ message: "Invalid authentication token" });
+    }
+    
+    console.log('📊 Fetching speaking history for studentId:', studentId);
+    const results = await getSpeakingHistory(studentId);
+    console.log('✅ Found', results.length, 'speaking history records');
+    res.status(200).json(results);
+  } catch (error) {
+    console.error('❌ Error fetching speaking history:', error);
+    console.error('Error details:', error.message);
+    console.error('Error stack:', error.stack);
+    res.status(500).json({ 
+      message: "Error fetching speaking history",
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+};
+
 module.exports = {
   insertLessonResultController,
   getLessonResultController,
-  getRecentlyLessonResultController
+  getRecentlyLessonResultController,
+  getSpeakingHistoryController
 };
