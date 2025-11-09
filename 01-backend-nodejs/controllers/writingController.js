@@ -1,0 +1,150 @@
+const writingModel = require('../models/writingModel');
+
+/**
+ * Lấy danh sách tất cả đề Writing
+ */
+async function getAllPrompts(req, res) {
+  try {
+    const prompts = await writingModel.getAllPrompts();
+    res.json({
+      success: true,
+      data: prompts
+    });
+  } catch (error) {
+    console.error('Error getting writing prompts:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to get writing prompts',
+      error: error.message
+    });
+  }
+}
+
+/**
+ * Lấy chi tiết một đề Writing
+ */
+async function getPromptById(req, res) {
+  try {
+    const { id } = req.params;
+    const prompt = await writingModel.getPromptById(id);
+    
+    if (!prompt) {
+      return res.status(404).json({
+        success: false,
+        message: 'Prompt not found'
+      });
+    }
+    
+    res.json({
+      success: true,
+      data: prompt
+    });
+  } catch (error) {
+    console.error('Error getting writing prompt:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to get writing prompt',
+      error: error.message
+    });
+  }
+}
+
+/**
+ * Nộp bài Writing (yêu cầu đăng nhập)
+ */
+async function submitWriting(req, res) {
+  try {
+    const { id } = req.params;
+    const { essayText } = req.body;
+    const studentId = req.user.id; // Từ JWT middleware
+    
+    if (!essayText || essayText.trim().length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Essay text is required'
+      });
+    }
+    
+    console.log(`Student ${studentId} submitting essay for prompt ${id}`);
+    
+    const result = await writingModel.submitWriting({
+      promptId: id,
+      studentId,
+      essayText
+    });
+    
+    res.json({
+      success: true,
+      message: 'Essay submitted and evaluated successfully',
+      data: result
+    });
+  } catch (error) {
+    console.error('Error submitting writing:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to submit essay',
+      error: error.message
+    });
+  }
+}
+
+/**
+ * Lấy lịch sử làm bài Writing của học sinh
+ */
+async function getStudentSubmissions(req, res) {
+  try {
+    const studentId = req.user.id;
+    const submissions = await writingModel.getStudentSubmissions(studentId);
+    
+    res.json({
+      success: true,
+      data: submissions
+    });
+  } catch (error) {
+    console.error('Error getting student submissions:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to get submission history',
+      error: error.message
+    });
+  }
+}
+
+/**
+ * Lấy chi tiết kết quả một bài làm
+ */
+async function getSubmissionDetail(req, res) {
+  try {
+    const { submissionId } = req.params;
+    const studentId = req.user.id;
+    
+    const detail = await writingModel.getSubmissionDetail(submissionId, studentId);
+    
+    if (!detail) {
+      return res.status(404).json({
+        success: false,
+        message: 'Submission not found or access denied'
+      });
+    }
+    
+    res.json({
+      success: true,
+      data: detail
+    });
+  } catch (error) {
+    console.error('Error getting submission detail:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to get submission detail',
+      error: error.message
+    });
+  }
+}
+
+module.exports = {
+  getAllPrompts,
+  getPromptById,
+  submitWriting,
+  getStudentSubmissions,
+  getSubmissionDetail
+};

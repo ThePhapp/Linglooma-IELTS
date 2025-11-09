@@ -15,6 +15,12 @@ import PageRegister from './pages/Auth/Register';
 import { ToastContainer } from 'react-toastify';
 import PronunciationFeedback from './pages/Features/Feedback';
 import VoiceChat from "./pages/AiChat/VoiceChat";
+import ReadingList from './components/ReadingList';
+import ReadingTest from './components/ReadingTest';
+import WritingList from './components/WritingList';
+import WritingEditor from './components/WritingEditor';
+import WritingHistory from './components/WritingHistory';
+import WritingDetail from './components/WritingDetail';
 
 const AppRoutes = () => {
   return (
@@ -28,6 +34,12 @@ const AppRoutes = () => {
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="features" element={<Skill4 />} />
           <Route path="features/lesson" element={<LessonSpeaking />} />
+          <Route path="features/reading" element={<ReadingList />} />
+          <Route path="features/reading/:id" element={<ReadingTest />} />
+          <Route path="features/writing" element={<WritingList />} />
+          <Route path="features/writing/history" element={<WritingHistory />} />
+          <Route path="features/writing/submissions/:submissionId" element={<WritingDetail />} />
+          <Route path="features/writing/:id" element={<WritingEditor />} />
           <Route path="ai-chat" element={<VoiceChat />} />
           <Route path="view-results" element={<ViewResultsPage />} />
           <Route path="settings" element={<SettingsPage />} />

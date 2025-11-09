@@ -33,6 +33,8 @@ const questionResultRoutes = require('./routes/questionResultRoute')
 const userRoutes = require('./routes/userRoute');
 const jwtauth = require("./middleware/jwtauth");
 const incorrectphonemesRoutes = require('./routes/incorrectphonemesRoutes');
+const readingRoutes = require('./routes/readingRoutes');
+const writingRoutes = require('./routes/writingRoutes');
 import chatRoutes from "./routes/chatRoutes.js";
 
 // middleware
@@ -50,6 +52,8 @@ app.use("/api/questions", questionRoutes);
 app.use("/api/questions/results", questionResultRoutes);
 app.use("/api/users", userRoutes);
 app.use('/api/incorrectphonemes', incorrectphonemesRoutes);
+app.use('/api/reading', readingRoutes);
+app.use('/api/writing', writingRoutes);
 app.use("/api", chatRoutes);
 // 404 handler đặt cuối cùng
 app.use((req, res) => {

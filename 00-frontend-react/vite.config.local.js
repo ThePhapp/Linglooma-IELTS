@@ -2,9 +2,10 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 import tagger from "@dhiwise/component-tagger";
-// vite.config.js
 
-// https://vitejs.dev/config/
+// LOCAL DEVELOPMENT CONFIG
+// Use this when running frontend on localhost (npm run dev)
+
 export default defineConfig({
   plugins: [react(), tagger()],
   build: {
@@ -24,13 +25,11 @@ export default defineConfig({
     port: "4028",
     host: 'localhost',
     strictPort: true,
-     proxy: {
+    proxy: {
       '/api': {
-        target: 'http://localhost:3000',  // For local development
+        target: 'http://localhost:3000',  // Backend on localhost
         changeOrigin: true,
       },
     },
-    // host: "0.0.0.0",
-    // allowedHosts: ['.amazonaws.com', '.builtwithrocket.new']
   }
 });

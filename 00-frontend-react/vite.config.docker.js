@@ -2,9 +2,10 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 import tagger from "@dhiwise/component-tagger";
-// vite.config.js
 
-// https://vitejs.dev/config/
+// DOCKER CONFIG
+// Use this when running all services in Docker (docker-compose up)
+
 export default defineConfig({
   plugins: [react(), tagger()],
   build: {
@@ -22,15 +23,13 @@ export default defineConfig({
   },
   server: {
     port: "4028",
-    host: 'localhost',
+    host: '0.0.0.0',  // Allow access from Docker network
     strictPort: true,
-     proxy: {
+    proxy: {
       '/api': {
-        target: 'http://localhost:3000',  // For local development
+        target: 'http://backend:3000',  // Backend in Docker network
         changeOrigin: true,
       },
     },
-    // host: "0.0.0.0",
-    // allowedHosts: ['.amazonaws.com', '.builtwithrocket.new']
   }
 });

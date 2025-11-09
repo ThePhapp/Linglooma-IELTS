@@ -53,6 +53,7 @@ exports.login = async (req, res) => {
     if (isMatch) {
       // Có thể tạo JWT ở đây nếu cần
       const payload = {
+        id: user.id,  // Thêm id vào payload
         email: user.email,
         name: user.username,
         phone: user.phonenumber,
