@@ -1,14 +1,32 @@
 import React from "react";
+import { GraduationCap, Target } from "lucide-react";
 
 const Skill4Header = () => {
     return (
-        <header className="flex flex-col justify-center items-center px-20 py-1.5 max-w-full text-center w-full max-md:px-5">
-            <div className="flex flex-col ">
-                <h1 className="self-start text-3xl font-extrabold leading-none text-slate-500">
+        <header className="relative overflow-hidden bg-gradient-to-r from-blue-600 via-purple-600 to-pink-500 rounded-2xl shadow-2xl p-10 mb-8">
+            {/* Decorative Elements */}
+            <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+            <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
+            
+            <div className="relative flex flex-col items-center text-center">
+                <div className="bg-white/20 backdrop-blur-sm p-4 rounded-2xl mb-6">
+                    <GraduationCap className="h-16 w-16 text-white" />
+                </div>
+                
+                <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-4 leading-tight">
                     IELTS 4-Skill Training
                 </h1>
-                <p className="mt-5 text-base leading-none text-zinc-800 max-md:max-w-full">
-                    Practice your pronunciation by recording yourself reading the passage
+                
+                <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-6 py-3 rounded-full">
+                    <Target className="h-5 w-5 text-white" />
+                    <p className="text-lg text-white font-medium">
+                        Master All Four Skills: Listening, Speaking, Reading & Writing
+                    </p>
+                </div>
+
+                <p className="mt-5 text-white/90 text-base max-w-2xl leading-relaxed">
+                    Choose your practice path and start improving your IELTS skills today. 
+                    Each module is designed to help you achieve your target score.
                 </p>
             </div>
         </header>

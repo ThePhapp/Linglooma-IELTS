@@ -5,15 +5,39 @@ export default function VoiceChat() {
   const [messages, setMessages] = useState([]);
   const [recording, setRecording] = useState(false);
   const [draftText, setDraftText] = useState("");
+  const [isTyping, setIsTyping] = useState(false);
+  const [conversationLength, setConversationLength] = useState(0);
   const recognitionRef = useRef(null);
+  const messagesEndRef = useRef(null);
   const token = localStorage.getItem("access_token");
+
+  // Auto scroll to bottom
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages, isTyping]);
+
+  // Welcome message
+  useEffect(() => {
+    setMessages([
+      {
+        id: Date.now(),
+        who: "ai",
+        type: "text",
+        text: "👋 Hello! I'm your IELTS AI assistant. I'm here to help you improve your English and prepare for the IELTS exam. How can I assist you today?",
+      }
+    ]);
+  }, []);
 
   useEffect(() => {
     const SpeechRecognition =
       window.SpeechRecognition || window.webkitSpeechRecognition;
 
     if (!SpeechRecognition) {
-      alert("Trình duyệt của bạn không hỗ trợ SpeechRecognition API!");
+      console.warn("Speech recognition not supported");
       return;
     }
 
@@ -42,121 +66,234 @@ export default function VoiceChat() {
   }, []);
 
   const toggleRecording = () => {
-    if (!recognitionRef.current) return;
-    if (recording) recognitionRef.current.stop();
-    else {
+    if (!recognitionRef.current) {
+      alert("Speech recognition is not supported in your browser. Please use Chrome or Edge.");
+      return;
+    }
+    if (recording) {
+      recognitionRef.current.stop();
+    } else {
       setDraftText("");
       recognitionRef.current.start();
     }
   };
 
   const handleSend = async () => {
-  if (!draftText.trim()) return;
+    if (!draftText.trim()) return;
 
-  const newMsg = {
-    id: Date.now(),
-    who: "user",
-    type: "text",
-    text: draftText,
+    const newMsg = {
+      id: Date.now(),
+      who: "user",
+      type: "text",
+      text: draftText,
+    };
+    setMessages((prev) => [...prev, newMsg]);
+    setDraftText("");
+    setIsTyping(true);
+
+    try {
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token && { Authorization: `Bearer ${token}` }),
+        },
+        body: JSON.stringify({ message: newMsg.text }),
+      });
+
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+
+      const data = await res.json();
+
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: Date.now() + 1,
+          who: "ai",
+          type: "text",
+          text: data.reply,
+        },
+      ]);
+
+      if (data.metadata?.conversationLength) {
+        setConversationLength(data.metadata.conversationLength);
+      }
+    } catch (err) {
+      console.error("❌ Error calling API:", err);
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: Date.now() + 1,
+          who: "ai",
+          type: "text",
+          text: "⚠️ Sorry, I couldn't connect to the server. Please check your connection and try again.",
+        },
+      ]);
+    } finally {
+      setIsTyping(false);
+    }
   };
-  setMessages((prev) => [...prev, newMsg]);
-  setDraftText("");
 
-  try {
-    const res = await fetch("http://localhost/api/chat", {
-      method: "POST",
-      headers: {
-    "Content-Type": "application/json",
-    ...(token && { Authorization: `Bearer ${token}` }),
-  },
-      body: JSON.stringify({ message: newMsg.text }),
-    });
-    const data = await res.json();
+  const handleClearChat = async () => {
+    if (!window.confirm("Are you sure you want to clear the entire conversation?")) {
+      return;
+    }
 
-    setMessages((prev) => [
-      ...prev,
-      {
-        id: Date.now() + 1,
-        who: "ai",
-        type: "text",
-        text: data.reply,
-      },
-    ]);
-  } catch (err) {
-    console.error("❌ Lỗi khi gọi API:", err);
-    setMessages((prev) => [
-      ...prev,
-      {
-        id: Date.now() + 1,
-        who: "ai",
-        type: "text",
-        text: "⚠️ Lỗi khi gọi server!",
-      },
-    ]);
-  }
-};
+    try {
+      const res = await fetch("/api/chat", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token && { Authorization: `Bearer ${token}` }),
+        },
+      });
 
+      if (res.ok) {
+        setMessages([
+          {
+            id: Date.now(),
+            who: "ai",
+            type: "text",
+            text: "👋 Conversation cleared! How can I help you today?",
+          }
+        ]);
+        setConversationLength(0);
+      }
+    } catch (err) {
+      console.error("❌ Error clearing chat:", err);
+      alert("Failed to clear conversation. Please try again.");
+    }
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
+    }
+  };
 
   return (
-  <div className="flex flex-col h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-    {/* Header */}
-    <header className="bg-white/80 backdrop-blur-md shadow px-4 py-3 flex items-center justify-between sticky top-0 z-10">
-      <h1 className="font-bold text-lg text-gray-700 flex items-center gap-2">
-        🎙️ <span>AI Chat</span>
-      </h1>
-    </header>
+    <div className="flex flex-col h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
+      {/* Header */}
+      <header className="bg-white/90 backdrop-blur-lg shadow-md px-6 py-4 flex items-center justify-between sticky top-0 z-10 border-b border-purple-100">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+            <span className="text-white text-xl">🤖</span>
+          </div>
+          <div>
+            <h1 className="font-bold text-xl bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              IELTS AI Assistant
+            </h1>
+            <p className="text-xs text-gray-500">
+              {conversationLength > 0 ? `${conversationLength} messages` : "Ready to help"}
+            </p>
+          </div>
+        </div>
+        
+        <button
+          onClick={handleClearChat}
+          className="px-4 py-2 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg transition-colors duration-200 text-sm font-medium flex items-center gap-2"
+          title="Clear conversation"
+        >
+          🗑️ <span className="max-sm:hidden">Clear</span>
+        </button>
+      </header>
 
-    {/* Chat area */}
-    <main className="flex-1 overflow-y-auto p-4 space-y-3">
-      {messages.map((m) => (
-        <MessageBubble key={m.id} msg={m} />
-      ))}
+      {/* Chat area */}
+      <main className="flex-1 overflow-y-auto p-6 space-y-4">
+        {messages.map((m) => (
+          <MessageBubble key={m.id} msg={m} />
+        ))}
 
-      {/* Hiển thị draft */}
-      {draftText && (
-        <div className="flex justify-end mb-3">
-          <div className="max-w-[70%] rounded-2xl px-4 py-2 shadow-md border border-dashed border-gray-400 text-gray-500 italic bg-white/70">
-<span>{draftText} <span className="text-xs">(chờ gửi…)</span></span>
+        {/* Typing indicator */}
+        {isTyping && (
+          <div className="flex items-start gap-3">
+            <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center flex-shrink-0">
+              <span className="text-white text-sm">🤖</span>
+            </div>
+            <div className="bg-white rounded-2xl px-5 py-3 shadow-md max-w-[70%]">
+              <div className="flex gap-1.5">
+                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+              </div>
+            </div>
+          </div>
+        )}
 
-      {/* Nút xóa */}
-      <button
-        onClick={() => setDraftText("")}
-        className="ml-2 text-red-500 hover:text-red-600 transition font-bold"
-        title="Xóa draft"
-      >
-        ✖️
-      </button>
+        {/* Draft preview */}
+        {draftText && (
+          <div className="flex justify-end">
+            <div className="max-w-[70%] rounded-2xl px-5 py-3 shadow-md border-2 border-dashed border-blue-300 bg-blue-50/50 backdrop-blur-sm">
+              <div className="flex items-center gap-2">
+                <span className="text-gray-700 italic">{draftText}</span>
+                <button
+                  onClick={() => setDraftText("")}
+                  className="ml-2 text-red-500 hover:text-red-600 transition font-bold"
+                  title="Clear draft"
+                >
+                  ✖️
+                </button>
+              </div>
+              <span className="text-xs text-gray-500">Press Enter to send...</span>
+            </div>
+          </div>
+        )}
+
+        <div ref={messagesEndRef} />
+      </main>
+
+      {/* Controls */}
+      <footer className="bg-white/90 backdrop-blur-lg shadow-lg px-6 py-4 sticky bottom-0 border-t border-purple-100">
+        <div className="flex items-center gap-3 max-w-4xl mx-auto">
+          {/* Voice recording button */}
+          <button
+            className={`w-12 h-12 flex items-center justify-center rounded-full shadow-lg transition-all duration-200 transform active:scale-95 ${
+              recording
+                ? "bg-gradient-to-r from-red-500 to-pink-500 animate-pulse text-white scale-110"
+                : "bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white"
+            }`}
+            onClick={toggleRecording}
+            title={recording ? "Stop recording" : "Start voice input"}
+          >
+            {recording ? "⏹️" : "🎙️"}
+          </button>
+
+          {/* Text input */}
+          <textarea
+            value={draftText}
+            onChange={(e) => setDraftText(e.target.value)}
+            onKeyPress={handleKeyPress}
+            placeholder="Type your message or use voice input..."
+            className="flex-1 px-4 py-3 rounded-2xl border-2 border-gray-200 focus:border-purple-400 focus:outline-none resize-none transition-colors duration-200"
+            rows="1"
+            style={{ maxHeight: '100px' }}
+          />
+
+          {/* Send button */}
+          <button
+            onClick={handleSend}
+            disabled={!draftText.trim()}
+            className={`px-6 py-3 rounded-2xl font-semibold shadow-lg transition-all duration-200 transform active:scale-95 ${
+              draftText.trim()
+                ? "bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white"
+                : "bg-gray-200 text-gray-400 cursor-not-allowed"
+            }`}
+          >
+            <span className="flex items-center gap-2">
+              <span>Send</span>
+              <span>📤</span>
+            </span>
+          </button>
+        </div>
+
+        {/* Tips */}
+        <div className="text-center mt-2 text-xs text-gray-500">
+          💡 Tip: Press Enter to send, or use 🎙️ voice input for speaking practice
+        </div>
+      </footer>
     </div>
-  </div>
-)}
-    </main>
-
-    {/* Controls */}
-    <footer className="bg-white/80 backdrop-blur-md shadow-inner px-4 py-3 flex items-center gap-3 sticky bottom-0">
-      <button
-        className={`w-14 h-14 flex items-center justify-center rounded-full shadow-lg transition transform active:scale-95 ${
-          recording
-            ? "bg-red-500 animate-pulse text-white"
-            : "bg-blue-500 hover:bg-blue-600 text-white"
-        }`}
-        onClick={toggleRecording}
-      >
-        {recording ? "⏹️" : "Start"}
-      </button>
-
-      <button
-        onClick={handleSend}
-        disabled={!draftText.trim()}
-        className={`flex-1 px-5 py-3 rounded-full font-medium text-center shadow-md transition ${
-          draftText.trim()
-            ? "bg-green-500 hover:bg-green-600 text-white"
-            : "bg-gray-200 text-gray-400 cursor-not-allowed"
-        }`}
-      >
-        Send
-      </button>
-    </footer>
-  </div>
-);
-
+  );
 }

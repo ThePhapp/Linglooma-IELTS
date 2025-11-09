@@ -1,36 +1,84 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { ArrowRight, Lock } from "lucide-react";
+import PropTypes from 'prop-types';
 
-export const PracticeCard = ({ title, description }) => {
+export const PracticeCard = ({ title, emoji, description, gradient, bgColor }) => {
     const navigate = useNavigate();
 
     const handleLearnClick = () => {
-        if (title.includes("Speaking Practice")) {
+        if (title.includes("Speaking")) {
             navigate("/admin/features/lesson");
-        } else if (title.includes("Reading Practice")) {
+        } else if (title.includes("Reading")) {
             navigate("/admin/features/reading");
-        } else if (title.includes("Writing Practice")) {
+        } else if (title.includes("Writing")) {
             navigate("/admin/features/writing");
-        } else {
-            console.log("Learn button clicked for:", title);
-            // Bạn có thể thêm logic khác tại đây nếu muốn xử lý cho từng card
+        } else if (title.includes("Listening")) {
+            console.log("Listening module - Coming soon!");
         }
     }
 
+    const isComingSoon = title.includes("Listening");
+
     return (
-        <article className="flex flex-col grow items-center px-12 pt-4 w-full bg-white rounded-lg shadow-[0px_2px_10px_rgba(0,0,0,0.1)] max-md:px-5 max-md:mt-10">
-            <header className="pb-5 max-w-full text-lg font-extrabold leading-none text-sky-800 border-b border-zinc-100 w-[266px]">
-                {title}
-            </header>
-            <p className="overflow-hidden self-stretch px-2.5 pt-2.5 pb-14 mt-5 text-base leading-6 rounded bg-slate-100 text-zinc-800">
-                {description}
-            </p>
-            <button
-                onClick={handleLearnClick}
-                className="px-14 py-3.5 mt-5 max-w-full text-sm font-bold leading-none text-center text-white whitespace-nowrap rounded bg-slate-500 w-[151px] max-md:px-5">
-                LEARN
-            </button>
-            <div className="flex shrink-0 h-[23px] w-[151px]" />
+        <article className={`group relative overflow-hidden bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 border-2 border-transparent hover:border-purple-200 ${bgColor}/30 h-full flex flex-col`}>
+            {/* Gradient Top Bar */}
+            <div className={`h-2 bg-gradient-to-r ${gradient}`}></div>
+            
+            {/* Content */}
+            <div className="p-8 flex-1 flex flex-col">
+                {/* Header */}
+                <div className="flex items-center gap-4 mb-6">
+                    <div className={`bg-gradient-to-br ${gradient} p-4 rounded-2xl shadow-lg transform group-hover:scale-110 transition-transform duration-300`}>
+                        <span className="text-4xl">{emoji}</span>
+                    </div>
+                    <h3 className="text-2xl font-bold text-gray-800 flex-1">
+                        {title}
+                    </h3>
+                </div>
+
+                {/* Description */}
+                <p className="text-gray-600 leading-relaxed mb-6 flex-1">
+                    {description}
+                </p>
+
+                {/* Footer with Button */}
+                <div className="flex items-center justify-between mt-auto pt-6 border-t border-gray-200">
+                    {isComingSoon ? (
+                        <div className="flex-1">
+                            <button
+                                disabled
+                                className="w-full flex items-center justify-center gap-3 px-6 py-4 rounded-xl bg-gray-300 text-gray-500 cursor-not-allowed font-semibold"
+                            >
+                                <Lock className="h-5 w-5" />
+                                <span>Coming Soon</span>
+                            </button>
+                            <p className="text-xs text-gray-400 text-center mt-2">
+                                This feature is under development
+                            </p>
+                        </div>
+                    ) : (
+                        <button
+                            onClick={handleLearnClick}
+                            className={`w-full flex items-center justify-center gap-3 px-6 py-4 rounded-xl bg-gradient-to-r ${gradient} text-white font-bold shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 active:scale-95`}
+                        >
+                            <span>Start Learning</span>
+                            <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                        </button>
+                    )}
+                </div>
+            </div>
+
+            {/* Hover Effect Overlay */}
+            <div className={`absolute inset-0 bg-gradient-to-br ${gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-300 pointer-events-none`}></div>
         </article>
     );
+};
+
+PracticeCard.propTypes = {
+    title: PropTypes.string.isRequired,
+    emoji: PropTypes.string.isRequired,
+    description: PropTypes.string.isRequired,
+    gradient: PropTypes.string.isRequired,
+    bgColor: PropTypes.string.isRequired,
 };

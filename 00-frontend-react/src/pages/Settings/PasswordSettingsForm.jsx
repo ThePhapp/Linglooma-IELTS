@@ -3,10 +3,9 @@ import { toast } from 'react-toastify';
 import axios from "@/utils/axios.customize";
 import { AuthContext } from '@/components/context/auth.context';
 
-
 const PasswordSettingsForm = () => {
-
     const { auth, setAuth } = useContext(AuthContext);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const [formData, setFormData] = useState({
         username: '',
@@ -22,7 +21,10 @@ const PasswordSettingsForm = () => {
         if (auth?.user) {
             setFormData(prev => ({
                 ...prev,
-                ...auth.user
+                username: auth.user.username || '',
+                gender: auth.user.gender || '',
+                nationality: auth.user.nationality || '',
+                phonenumber: auth.user.phonenumber || ''
             }));
         }
     }, [auth]);
@@ -36,14 +38,30 @@ const PasswordSettingsForm = () => {
 
     const handleSave = async (e) => {
         e.preventDefault();
+        
+        // Validation
+        if (!formData.username.trim()) {
+            toast.error('Username is required');
+            return;
+        }
 
         if (formData.newPassword && formData.newPassword !== formData.confirmPassword) {
             toast.error('New password and confirm password do not match');
             return;
         }
 
+        if (formData.newPassword && formData.newPassword.length < 6) {
+            toast.error('Password must be at least 6 characters long');
+            return;
+        }
+
+        if (formData.newPassword && !formData.currentPassword) {
+            toast.error('Please enter your current password to change it');
+            return;
+        }
+
         const payload = {
-            email: auth?.user?.email, // lấy email từ context
+            email: auth?.user?.email,
             username: formData.username,
             password: formData.newPassword || '',
             currentPassword: formData.currentPassword || '',
@@ -51,30 +69,30 @@ const PasswordSettingsForm = () => {
             nationality: formData.nationality,
             phonenumber: formData.phonenumber
         };
-        console.log("Payload gửi đi:", payload);
+
+        console.log("Payload:", payload);
 
         try {
+            setIsSubmitting(true);
             const data = await axios.put(`/api/users/update`, payload);
 
             if (data.success === true) {
-                toast.success('Cập nhật thành công');
+                toast.success('✅ Profile updated successfully!');
 
                 const updatedUser = {
-                    email: auth.user.email, // giữ lại email
+                    email: auth.user.email,
                     username: formData.username,
                     gender: formData.gender,
                     nationality: formData.nationality,
                     phonenumber: formData.phonenumber
                 };
 
-
-                //  Update Context
                 setAuth(prev => ({
                     ...prev,
                     user: updatedUser
                 }));
 
-                // ✅ Reset password fields
+                // Reset password fields
                 setFormData({
                     ...formData,
                     currentPassword: '',
@@ -82,99 +100,211 @@ const PasswordSettingsForm = () => {
                     confirmPassword: ''
                 });
             } else {
-                toast.error(data.message || 'Cập nhật thất bại');
+                toast.error(data.message || 'Update failed');
             }
         } catch (err) {
+            console.error('Update error:', err);
             if (err.response) {
-                toast.error('Lỗi: ' + (err.response.data.message || 'Unknown error'));
+                toast.error('❌ ' + (err.response.data.message || 'Unknown error'));
             } else if (err.request) {
-                toast.error('Không nhận được phản hồi từ server');
+                toast.error('❌ No response from server');
             } else {
-                toast.error('Lỗi kết nối server: ' + (err.message || 'Unknown error'));
+                toast.error('❌ Connection error: ' + (err.message || 'Unknown error'));
             }
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
     return (
-        <section className="flex-1">
-            <article className="p-6 bg-white rounded-lg">
-                <form className="gap-y-6" onSubmit={handleSave}>
-                    <div className="mb-6">
-                        <label htmlFor="username" className="block mb-2">User Name</label>
-                        <input
-                            type="text"
-                            id="username"
-                            value={formData.username}
-                            onChange={handleChange}
-                            className="p-3 w-full rounded-lg border"
-                        />
+        <div className="space-y-6">
+            <form onSubmit={handleSave} className="space-y-6">
+                {/* Account Information */}
+                <div className="space-y-4">
+                    <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+                        <span>👤</span>
+                        <span>Account Information</span>
+                    </h3>
+
+                    <div>
+                        <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-2">
+                            Username <span className="text-red-500">*</span>
+                        </label>
+                        <div className="relative">
+                            <input
+                                type="text"
+                                id="username"
+                                value={formData.username}
+                                onChange={handleChange}
+                                required
+                                className="w-full px-4 py-3 pl-10 border-2 border-gray-200 rounded-xl focus:border-purple-400 focus:outline-none transition-colors duration-200"
+                                placeholder="Enter your username"
+                            />
+                            <span className="absolute left-3 top-1/2 transform -translate-y-1/2">👤</span>
+                        </div>
                     </div>
-                    <div className="mb-6">
-                        <label htmlFor="currentPassword" className="block mb-2">Current Password</label>
-                        <input
-                            type="password"
-                            id="currentPassword"
-                            value={formData.currentPassword}
-                            onChange={handleChange}
-                            className="p-3 w-full rounded-lg border"
-                        />
+                </div>
+
+                {/* Password Section */}
+                <div className="space-y-4">
+                    <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+                        <span>🔒</span>
+                        <span>Change Password</span>
+                    </h3>
+
+                    <div>
+                        <label htmlFor="currentPassword" className="block text-sm font-medium text-gray-700 mb-2">
+                            Current Password
+                        </label>
+                        <div className="relative">
+                            <input
+                                type="password"
+                                id="currentPassword"
+                                value={formData.currentPassword}
+                                onChange={handleChange}
+                                className="w-full px-4 py-3 pl-10 border-2 border-gray-200 rounded-xl focus:border-purple-400 focus:outline-none transition-colors duration-200"
+                                placeholder="Enter current password"
+                            />
+                            <span className="absolute left-3 top-1/2 transform -translate-y-1/2">🔑</span>
+                        </div>
                     </div>
-                    <div className="mb-6">
-                        <label htmlFor="newPassword" className="block mb-2">New Password</label>
-                        <input
-                            type="password"
-                            id="newPassword"
-                            value={formData.newPassword}
-                            onChange={handleChange}
-                            className="p-3 w-full rounded-lg border"
-                        />
+
+                    <div>
+                        <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700 mb-2">
+                            New Password
+                        </label>
+                        <div className="relative">
+                            <input
+                                type="password"
+                                id="newPassword"
+                                value={formData.newPassword}
+                                onChange={handleChange}
+                                className="w-full px-4 py-3 pl-10 border-2 border-gray-200 rounded-xl focus:border-purple-400 focus:outline-none transition-colors duration-200"
+                                placeholder="Enter new password (min 6 characters)"
+                            />
+                            <span className="absolute left-3 top-1/2 transform -translate-y-1/2">🔐</span>
+                        </div>
                     </div>
-                    <div className="mb-6">
-                        <label htmlFor="confirmPassword" className="block mb-2">Confirm Password</label>
-                        <input
-                            type="password"
-                            id="confirmPassword"
-                            value={formData.confirmPassword}
-                            onChange={handleChange}
-                            className="p-3 w-full rounded-lg border"
-                        />
+
+                    <div>
+                        <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-2">
+                            Confirm New Password
+                        </label>
+                        <div className="relative">
+                            <input
+                                type="password"
+                                id="confirmPassword"
+                                value={formData.confirmPassword}
+                                onChange={handleChange}
+                                className="w-full px-4 py-3 pl-10 border-2 border-gray-200 rounded-xl focus:border-purple-400 focus:outline-none transition-colors duration-200"
+                                placeholder="Re-enter new password"
+                            />
+                            <span className="absolute left-3 top-1/2 transform -translate-y-1/2">✓</span>
+                        </div>
                     </div>
-                    <div className="mb-6">
-                        <label htmlFor="gender" className="block mb-2">Gender</label>
-                        <input
-                            type="text"
-                            id="gender"
-                            value={formData.gender}
-                            onChange={handleChange}
-                            className="p-3 w-full rounded-lg border"
-                        />
+                </div>
+
+                {/* Personal Details */}
+                <div className="space-y-4">
+                    <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+                        <span>📝</span>
+                        <span>Personal Details</span>
+                    </h3>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label htmlFor="gender" className="block text-sm font-medium text-gray-700 mb-2">
+                                Gender
+                            </label>
+                            <div className="relative">
+                                <input
+                                    type="text"
+                                    id="gender"
+                                    value={formData.gender}
+                                    onChange={handleChange}
+                                    className="w-full px-4 py-3 pl-10 border-2 border-gray-200 rounded-xl focus:border-purple-400 focus:outline-none transition-colors duration-200"
+                                    placeholder="e.g., Male, Female, Other"
+                                />
+                                <span className="absolute left-3 top-1/2 transform -translate-y-1/2">⚥</span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label htmlFor="phonenumber" className="block text-sm font-medium text-gray-700 mb-2">
+                                Phone Number
+                            </label>
+                            <div className="relative">
+                                <input
+                                    type="tel"
+                                    id="phonenumber"
+                                    value={formData.phonenumber}
+                                    onChange={handleChange}
+                                    className="w-full px-4 py-3 pl-10 border-2 border-gray-200 rounded-xl focus:border-purple-400 focus:outline-none transition-colors duration-200"
+                                    placeholder="Enter phone number"
+                                />
+                                <span className="absolute left-3 top-1/2 transform -translate-y-1/2">📱</span>
+                            </div>
+                        </div>
+
+                        <div className="md:col-span-2">
+                            <label htmlFor="nationality" className="block text-sm font-medium text-gray-700 mb-2">
+                                Nationality
+                            </label>
+                            <div className="relative">
+                                <input
+                                    type="text"
+                                    id="nationality"
+                                    value={formData.nationality}
+                                    onChange={handleChange}
+                                    className="w-full px-4 py-3 pl-10 border-2 border-gray-200 rounded-xl focus:border-purple-400 focus:outline-none transition-colors duration-200"
+                                    placeholder="Enter your nationality"
+                                />
+                                <span className="absolute left-3 top-1/2 transform -translate-y-1/2">🌍</span>
+                            </div>
+                        </div>
                     </div>
-                    <div className="mb-6">
-                        <label htmlFor="nationality" className="block mb-2">Nationality</label>
-                        <input
-                            type="text"
-                            id="nationality"
-                            value={formData.nationality}
-                            onChange={handleChange}
-                            className="p-3 w-full rounded-lg border"
-                        />
+                </div>
+
+                {/* Submit Button */}
+                <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className={`w-full py-4 rounded-xl font-bold text-white shadow-lg transition-all duration-200 transform active:scale-95 ${
+                        isSubmitting
+                            ? 'bg-gray-400 cursor-not-allowed'
+                            : 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700'
+                    }`}
+                >
+                    {isSubmitting ? (
+                        <span className="flex items-center justify-center gap-2">
+                            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                            <span>Saving...</span>
+                        </span>
+                    ) : (
+                        <span className="flex items-center justify-center gap-2">
+                            <span>💾</span>
+                            <span>Save Changes</span>
+                        </span>
+                    )}
+                </button>
+            </form>
+
+            {/* Security Tips */}
+            <div className="bg-yellow-50 border-l-4 border-yellow-500 rounded-lg p-4">
+                <div className="flex items-start gap-3">
+                    <span className="text-2xl">⚠️</span>
+                    <div>
+                        <h4 className="font-semibold text-yellow-800 mb-2">Security Tips</h4>
+                        <ul className="text-sm text-yellow-700 space-y-1 list-disc list-inside">
+                            <li>Use a strong password with at least 6 characters</li>
+                            <li>Don't share your password with anyone</li>
+                            <li>Change your password regularly</li>
+                            <li>Use a unique password for this account</li>
+                        </ul>
                     </div>
-                    <div className="mb-6">
-                        <label htmlFor="phonenumber" className="block mb-2">Phone number</label>
-                        <input
-                            type="text"
-                            id="phonenumber"
-                            value={formData.phonenumber}
-                            onChange={handleChange}
-                            className="p-3 w-full rounded-lg border"
-                        />
-                    </div>
-                    <button type="submit" className="py-3 w-full text-white bg-blue-500 rounded-lg">
-                        Save
-                    </button>
-                </form>
-            </article>
-        </section>
+                </div>
+            </div>
+        </div>
     );
 };
 
