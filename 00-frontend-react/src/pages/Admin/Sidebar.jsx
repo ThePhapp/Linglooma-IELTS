@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import SidebarLink from "./Sidebar-link";
-import { Home, BookOpen, BarChart2, Settings, ClipboardList, MessageSquare, LogOut } from "lucide-react";
+import { Home, BookOpen, BarChart2, Settings, ClipboardList, MessageSquare, LogOut, Activity } from "lucide-react";
 import { useContext } from "react";
 import { AuthContext } from "@/components/context/auth.context";
 
@@ -78,8 +78,8 @@ const Sidebar = () => {
                     <SidebarLink href="/admin/ai-chat" icon={<MessageSquare className="h-5 w-5" />}>
                         AI Chat
                     </SidebarLink>
-                    <SidebarLink href="/admin/view-results" icon={<BarChart2 className="h-5 w-5" />}>
-                        Results View
+                    <SidebarLink href="/admin/analytics" icon={<Activity className="h-5 w-5" />}>
+                        Smart Analytics
                     </SidebarLink>
                 </ul>
 

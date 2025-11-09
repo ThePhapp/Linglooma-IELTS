@@ -1,5 +1,5 @@
-import express from "express";
-import { chatController, clearChatController } from "../controllers/chatController.js";
+const express = require("express");
+const { chatController, clearChatController } = require("../controllers/chatController.js");
 
 const router = express.Router();
 
@@ -9,4 +9,4 @@ router.post("/chat", chatController);
 // DELETE /api/chat - Clear conversation history
 router.delete("/chat", clearChatController);
 
-export default router;
+module.exports = router;

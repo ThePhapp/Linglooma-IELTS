@@ -13,7 +13,7 @@ const SYSTEM_PROMPT = `You are an expert IELTS teacher and English language coac
 
 Always be friendly, professional, and focus on helping students achieve their IELTS goals.`;
 
-export async function askGemini(userMessage, sessionId = 'default') {
+async function askGemini(userMessage, sessionId = 'default') {
   try {
     const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
@@ -112,13 +112,19 @@ export async function askGemini(userMessage, sessionId = 'default') {
 }
 
 // Xóa conversation history
-export function clearConversation(sessionId = 'default') {
+function clearConversation(sessionId = 'default') {
   conversationHistory.delete(sessionId);
   console.log('🗑️ Cleared conversation for session:', sessionId);
   return true;
 }
 
 // Lấy số lượng messages trong conversation
-export function getConversationLength(sessionId = 'default') {
+function getConversationLength(sessionId = 'default') {
   return conversationHistory.get(sessionId)?.length || 0;
 }
+
+module.exports = {
+  askGemini,
+  clearConversation,
+  getConversationLength
+};

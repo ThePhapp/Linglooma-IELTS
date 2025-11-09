@@ -274,7 +274,7 @@ const WritingEditor = () => {
               onClick={handleRetry}
               className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition"
             >
-              🔄 Write Again
+              Write Again
             </button>
             <button
               onClick={() => navigate('/admin/features/writing')}
@@ -322,7 +322,7 @@ const WritingEditor = () => {
         {/* Editor */}
         <div className="p-6">
           <div className="flex justify-between items-center mb-2">
-            <h3 className="font-semibold text-gray-800">✍️ Your Essay:</h3>
+            <h3 className="font-semibold text-gray-800">Your Essay:</h3>
             <div className="flex gap-4 text-sm">
               <span className={getWordCount() < prompt.word_limit ? 'text-red-600 font-semibold' : 'text-green-600 font-semibold'}>
                 {getWordCount()} / {prompt.word_limit} words

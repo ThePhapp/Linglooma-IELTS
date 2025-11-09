@@ -208,7 +208,7 @@ const WritingDetail = () => {
             {/* Vocabulary Suggestions */}
             {detail.vocabulary_suggestions && detail.vocabulary_suggestions.length > 0 && (
               <div className="mb-8">
-                <h3 className="text-xl font-semibold mb-3">💡 Vocabulary Enhancements</h3>
+                <h3 className="text-xl font-semibold mb-3">💡  Enhancements</h3>
                 <div className="space-y-3">
                   {detail.vocabulary_suggestions.map((vocab, index) => (
                     <div key={index} className="bg-purple-50 border-l-4 border-purple-400 p-4 rounded">

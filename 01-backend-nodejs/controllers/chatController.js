@@ -1,6 +1,6 @@
-import { askGemini, clearConversation, getConversationLength } from "../services/chatService.js";
+const { askGemini, clearConversation, getConversationLength } = require("../services/chatService.js");
 
-export async function chatController(req, res) {
+async function chatController(req, res) {
   const { message } = req.body;
   
   if (!message || typeof message !== 'string') {
@@ -43,7 +43,7 @@ export async function chatController(req, res) {
 }
 
 // Endpoint mới để xóa conversation
-export async function clearChatController(req, res) {
+async function clearChatController(req, res) {
   try {
     const sessionId = req.user?.id || req.ip || 'anonymous';
     clearConversation(sessionId);
@@ -57,3 +57,8 @@ export async function clearChatController(req, res) {
     res.status(500).json({ error: "Failed to clear conversation" });
   }
 }
+
+module.exports = {
+  chatController,
+  clearChatController
+};

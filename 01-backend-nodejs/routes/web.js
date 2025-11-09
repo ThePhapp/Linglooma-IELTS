@@ -1,4 +1,4 @@
-import express from "express";
+const express = require("express");
 //import scoreRoutes from "./scoreRoutes.js";
 const router = express.Router();
 
@@ -14,4 +14,4 @@ const initWebRoutes = (app) => {
     return app.use("/", router);
 }
 
-export default initWebRoutes;
+module.exports = initWebRoutes;

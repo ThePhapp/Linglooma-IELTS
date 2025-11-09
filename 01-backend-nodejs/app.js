@@ -24,18 +24,18 @@ app.use(cors(corsOptions));
 
 
 // route dữ liệu 
-const scoreRoutes = require("./routes/scoreRoutes");
-const authRoutes = require("./routes/authRoutes");
-const lessonRoutes = require("./routes/lessonRoute");
-const lessonResultRoutes = require('./routes/lessonResultRoute');
-const questionRoutes = require('./routes/questionRoute');
-const questionResultRoutes = require('./routes/questionResultRoute')
-const userRoutes = require('./routes/userRoute');
-const jwtauth = require("./middleware/jwtauth");
-const incorrectphonemesRoutes = require('./routes/incorrectphonemesRoutes');
-const readingRoutes = require('./routes/readingRoutes');
-const writingRoutes = require('./routes/writingRoutes');
-import chatRoutes from "./routes/chatRoutes.js";
+const scoreRoutes = require("./routes/scoreRoutes.js");
+const authRoutes = require("./routes/authRoutes.js");
+const lessonRoutes = require("./routes/lessonRoute.js");
+const lessonResultRoutes = require('./routes/lessonResultRoute.js');
+const questionRoutes = require('./routes/questionRoute.js');
+const questionResultRoutes = require('./routes/questionResultRoute.js')
+const userRoutes = require('./routes/userRoute.js');
+const jwtauth = require("./middleware/jwtauth.js");
+const incorrectphonemesRoutes = require('./routes/incorrectphonemesRoutes.js');
+const readingRoutes = require('./routes/readingRoutes.js');
+const writingRoutes = require('./routes/writingRoutes.js');
+const chatRoutes = require("./routes/chatRoutes.js");
 
 // middleware
 app.use(jwtauth);

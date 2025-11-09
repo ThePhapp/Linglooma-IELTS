@@ -1,4 +1,4 @@
-import express from "express";
+const express = require("express");
 
 /**
  * 
@@ -10,4 +10,4 @@ const configViewEngine = (app) => {
     app.set("views", "./src/views"); // nơi lưu trữ file
 }
 
-export default configViewEngine;
+module.exports = configViewEngine;

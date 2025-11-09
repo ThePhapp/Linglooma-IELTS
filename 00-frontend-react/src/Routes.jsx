@@ -8,7 +8,7 @@ import Admin from './pages/Admin/Admin';
 
 import LessonSpeaking from './pages/Features/LessonSpeaking';
 import SettingsPage from './pages/Settings';
-import ViewResultsPage from './pages/ViewResults/ViewResults';
+import SmartAnalytics from './pages/ViewResults/SmartAnalytics';
 import Skill4 from './pages/Features/Skill4';
 import IeltsSpeakingPractice from './pages/Features/Practice';
 import PageRegister from './pages/Auth/Register';
@@ -45,7 +45,7 @@ const AppRoutes = () => {
           <Route path="features/writing/submissions/:submissionId" element={<WritingDetail />} />
           <Route path="features/writing/:id" element={<WritingEditor />} />
           <Route path="ai-chat" element={<VoiceChat />} />
-          <Route path="view-results" element={<ViewResultsPage />} />
+          <Route path="analytics" element={<SmartAnalytics />} />
           <Route path="settings" element={<SettingsPage />} />
           <Route path="features/practice/:lessonId" element={<IeltsSpeakingPractice />} />
           <Route path="features/feedback/:lessonId" element={<PronunciationFeedback />} />
