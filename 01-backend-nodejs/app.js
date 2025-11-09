@@ -3,7 +3,7 @@ const cors = require("cors");
 const app = express();
 app.use(express.json({ limit: "50mb" })); // tăng giới hạn size vì audio base64 có thể lớn
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
-const allowedOrigins = ["http://localhost", "http://localhost:4028"];
+const allowedOrigins = ["http://localhost", "http://localhost:4028", "https://linglooma.vercel.app"];
 
 const corsOptions = {
   origin: function (origin, callback) {
