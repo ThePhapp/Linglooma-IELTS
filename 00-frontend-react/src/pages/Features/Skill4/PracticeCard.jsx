@@ -14,11 +14,11 @@ export const PracticeCard = ({ title, emoji, description, gradient, bgColor }) =
         } else if (title.includes("Writing")) {
             navigate("/admin/features/writing");
         } else if (title.includes("Listening")) {
-            console.log("Listening module - Coming soon!");
+            navigate("/admin/features/listening");
         }
     }
 
-    const isComingSoon = title.includes("Listening");
+    const isComingSoon = false; // All features are now available
 
     return (
         <article className={`group relative overflow-hidden bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 border-2 border-transparent hover:border-purple-200 ${bgColor}/30 h-full flex flex-col`}>

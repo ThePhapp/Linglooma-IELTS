@@ -1,9 +1,11 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { Play, ChevronRight } from "lucide-react";
+import PropTypes from 'prop-types';
 
-const CourseCard = ({ title, imageUrl, lessonId }) => {
-
+const CourseCard = ({ title, topic, imageUrl, lessonId, gradient }) => {
     const navigate = useNavigate();
+    
     const handleLearnClick = () => {
         if (lessonId) {
             navigate(`/admin/features/practice/${lessonId}`);
@@ -13,23 +15,59 @@ const CourseCard = ({ title, imageUrl, lessonId }) => {
     }
 
     return (
-        <article className="flex flex-col px-16 py-4 w-full bg-white rounded-lg shadow-[0px_2px_10px_rgba(0,0,0,0.1)] max-md:px-5">
-            <header className="self-center pb-6 max-w-full text-lg font-extrabold leading-none text-sky-800 border-b border-zinc-100 w-[166px]">
-                {title}
-            </header>
-            <img
-                src={imageUrl}
-                className="object-contain mt-3.5 w-full aspect-[1.2]"
-                alt={title}
-            />
-            <div className="flex shrink-0 ml-8 h-[35px] w-[151px] max-md:ml-2.5" />
-            <button
-                onClick={handleLearnClick}
-                className="self-center px-14 py-3.5 max-w-full text-sm font-bold leading-none text-center text-white whitespace-nowrap rounded bg-slate-500 w-[151px] max-md:px-5">
-                LEARN
-            </button>
+        <article className="group relative overflow-hidden bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 border-2 border-transparent hover:border-purple-200 transform hover:scale-105">
+            {/* Gradient Top Bar */}
+            <div className={`h-2 bg-gradient-to-r ${gradient}`}></div>
+            
+            {/* Content */}
+            <div className="p-6">
+                {/* Topic Badge */}
+                <div className="flex items-center justify-between mb-4">
+                    <span className={`px-4 py-2 rounded-full bg-gradient-to-r ${gradient} text-white text-sm font-bold shadow-md`}>
+                        {topic}
+                    </span>
+                    <div className={`bg-gradient-to-br ${gradient} p-2 rounded-lg`}>
+                        <Play className="h-5 w-5 text-white" />
+                    </div>
+                </div>
+
+                {/* Title */}
+                <h3 className="text-2xl font-bold text-gray-800 mb-4">
+                    {title}
+                </h3>
+
+                {/* Image */}
+                <div className="relative mb-4 rounded-xl overflow-hidden shadow-md">
+                    <img
+                        src={imageUrl}
+                        className="object-cover w-full h-48 group-hover:scale-110 transition-transform duration-300"
+                        alt={title}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                </div>
+
+                {/* Button */}
+                <button
+                    onClick={handleLearnClick}
+                    className={`w-full flex items-center justify-center gap-3 px-6 py-4 rounded-xl bg-gradient-to-r ${gradient} text-white font-bold shadow-lg hover:shadow-xl transition-all duration-200 transform active:scale-95`}
+                >
+                    <span>Start Learning</span>
+                    <ChevronRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                </button>
+            </div>
+
+            {/* Hover Effect Overlay */}
+            <div className={`absolute inset-0 bg-gradient-to-br ${gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-300 pointer-events-none`}></div>
         </article>
     );
+};
+
+CourseCard.propTypes = {
+    title: PropTypes.string.isRequired,
+    topic: PropTypes.string.isRequired,
+    imageUrl: PropTypes.string.isRequired,
+    lessonId: PropTypes.number.isRequired,
+    gradient: PropTypes.string.isRequired,
 };
 
 export default CourseCard;

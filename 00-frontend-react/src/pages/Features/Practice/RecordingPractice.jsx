@@ -8,8 +8,7 @@ import axios from "@/utils/axios.customize";
 import { toast } from "react-toastify";
 import { useParams } from "react-router-dom";
 import ResultPDFDownloader from "./ResultPDFDownloader";
-
-
+import { Play, Square, Send, Volume2, Download } from "lucide-react";
 
 const RecordingPractice = ({ currentQuestion, referenceText, onScore, currentIndex, setLoading }) => {
   const [lessonImage, setLessonImage] = useState(null);
@@ -91,10 +90,7 @@ const RecordingPractice = ({ currentQuestion, referenceText, onScore, currentInd
       reader.readAsDataURL(blob);
     });
 
-
   const sendAudioToBackend = async () => {
-
-
     if (!recorderRef.current) {
       setStatus("No recording found");
       return;
@@ -148,8 +144,8 @@ const RecordingPractice = ({ currentQuestion, referenceText, onScore, currentInd
         });
 
       } else {
-        setStatus("Lỗi: dữ liệu phản hồi không hợp lệ");
-        toast.error("Dữ liệu phản hồi không hợp lệ");
+        setStatus("Error: Invalid response data");
+        toast.error("Invalid response data");
         setScoreData(null);
       }
 
@@ -162,35 +158,45 @@ const RecordingPractice = ({ currentQuestion, referenceText, onScore, currentInd
     }
   };
 
-
   return (
-    <section className="p-5 bg-white rounded-lg shadow-sm max-h-full mx-auto">
-      <h2 className="py-1.5 mb-5 text-xl font-extrabold text-sky-800 border-b border-gray-200 text-center">
-        Speaking Practice
-      </h2>
+    <section className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 border-2 border-purple-200 h-full flex flex-col">
+      {/* Header */}
+      <div className="text-center mb-6">
+        <div className="flex items-center justify-center gap-2 mb-2">
+          <div className="bg-gradient-to-br from-purple-500 to-pink-500 p-2 rounded-lg">
+            <FaMicrophone className="text-white text-xl" />
+          </div>
+          <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+            Recording Practice
+          </h2>
+        </div>
+      </div>
 
-      {/* Reference text + nút nghe */}
-      <div className="mb-6 p-4 bg-blue-50 rounded text-center text-lg font-semibold text-blue-700 select-text flex items-center justify-center gap-2"
-        style={{ minHeight: 70, lineHeight: "1.5", whiteSpace: "normal" }}>
-        {scoreData?.wordsAssessment?.length > 0 ? (
-          <HighlightTextWithTooltip
-            text={referenceText}
-            wordsAssessment={scoreData.wordsAssessment}
-          />
-        ) : (
-          <span>{referenceText}</span>
-
-        )}
-        <TextToSpeechButton text={referenceText} />
+      {/* Reference Text */}
+      <div className="mb-6 p-5 bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl border-2 border-blue-200 shadow-md">
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex-1 text-lg font-medium text-gray-800 select-text leading-relaxed">
+            {scoreData?.wordsAssessment?.length > 0 ? (
+              <HighlightTextWithTooltip
+                text={referenceText}
+                wordsAssessment={scoreData.wordsAssessment}
+              />
+            ) : (
+              <span>{referenceText}</span>
+            )}
+          </div>
+          <TextToSpeechButton text={referenceText} />
+        </div>
       </div>
 
       {/* Controls */}
-      <div className="flex flex-col items-center gap-6">
-        <div className="flex gap-6 items-center">
+      <div className="flex flex-col items-center gap-6 flex-1">
+        {/* Recording Button */}
+        <div className="relative">
           {!recording ? (
             <button
               onClick={startRecording}
-              className="flex justify-center items-center w-20 h-20 rounded-full bg-blue-600 hover:bg-blue-700 text-white shadow-lg transition"
+              className="flex justify-center items-center w-24 h-24 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-2xl transition-all duration-200 transform hover:scale-110 active:scale-95"
               aria-label="Start Recording"
             >
               <FaMicrophone size={40} />
@@ -198,59 +204,98 @@ const RecordingPractice = ({ currentQuestion, referenceText, onScore, currentInd
           ) : (
             <button
               onClick={stopRecording}
-              className="flex justify-center items-center w-20 h-20 rounded-full bg-red-600 hover:bg-red-700 text-white shadow-lg transition"
+              className="flex justify-center items-center w-24 h-24 rounded-full bg-gradient-to-br from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 text-white shadow-2xl transition-all duration-200 transform hover:scale-110 active:scale-95 animate-pulse"
               aria-label="Stop Recording"
             >
               <FaMicrophone size={40} />
             </button>
           )}
+          {recording && (
+            <div className="absolute -top-1 -right-1 w-6 h-6 bg-red-500 rounded-full animate-ping"></div>
+          )}
+        </div>
 
-          <Button
-            variant="secondary"
+        {/* Action Buttons */}
+        <div className="flex flex-wrap gap-3 justify-center">
+          <button
             onClick={stopRecording}
             disabled={!recording}
-            className="px-4 py-2"
+            className={`flex items-center gap-2 px-6 py-3 rounded-xl font-semibold shadow-lg transition-all duration-200 transform hover:scale-105 ${
+              recording
+                ? "bg-gradient-to-r from-red-600 to-pink-600 text-white hover:from-red-700 hover:to-pink-700"
+                : "bg-gray-300 text-gray-500 cursor-not-allowed"
+            }`}
           >
-            Stop
-          </Button>
+            <Square className="h-4 w-4" />
+            <span>Stop</span>
+          </button>
 
-          <Button
-            variant="secondary"
+          <button
             onClick={playAudio}
             disabled={!audioURL}
-            className="px-4 py-2"
+            className={`flex items-center gap-2 px-6 py-3 rounded-xl font-semibold shadow-lg transition-all duration-200 transform hover:scale-105 ${
+              audioURL
+                ? "bg-gradient-to-r from-green-600 to-emerald-600 text-white hover:from-green-700 hover:to-emerald-700"
+                : "bg-gray-300 text-gray-500 cursor-not-allowed"
+            }`}
           >
-            Play
-          </Button>
+            <Play className="h-4 w-4" />
+            <span>Play</span>
+          </button>
 
-          <Button
-            variant="primary"
+          <button
             onClick={sendAudioToBackend}
             disabled={!audioURL}
-            className="px-4 py-2"
+            className={`flex items-center gap-2 px-6 py-3 rounded-xl font-semibold shadow-lg transition-all duration-200 transform hover:scale-105 ${
+              audioURL
+                ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-700 hover:to-pink-700"
+                : "bg-gray-300 text-gray-500 cursor-not-allowed"
+            }`}
           >
-            Submit
-          </Button>
+            <Send className="h-4 w-4" />
+            <span>Submit</span>
+          </button>
+
           <ResultPDFDownloader scoreData={scoreData} />
         </div>
 
-        <p className="text-center font-semibold text-gray-700">{status}</p>
+        {/* Status */}
+        <div className="text-center">
+          <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full font-semibold ${
+            recording 
+              ? "bg-red-100 text-red-700" 
+              : audioURL 
+              ? "bg-green-100 text-green-700" 
+              : "bg-gray-100 text-gray-700"
+          }`}>
+            {recording && <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>}
+            <span>{status}</span>
+          </div>
+        </div>
 
-        {/* Audio player */}
+        {/* Audio Player */}
         {audioURL && (
-          <audio
-            ref={audioRef}
-            controls
-            src={audioURL}
-            className="w-full rounded shadow-md mt-4"
-          />
+          <div className="w-full bg-gradient-to-br from-gray-50 to-gray-100 p-4 rounded-xl border-2 border-gray-200">
+            <audio
+              ref={audioRef}
+              controls
+              src={audioURL}
+              className="w-full"
+            />
+          </div>
+        )}
+
+        {/* Lesson Image */}
+        {lessonImage && (
+          <div className="w-full flex justify-center mt-4">
+            <img 
+              src={lessonImage} 
+              alt="Lesson illustration" 
+              className="rounded-2xl shadow-lg max-w-md w-full border-2 border-purple-200" 
+            />
+          </div>
         )}
       </div>
-      {lessonImage && (
-        <div className="w-full mt-5 flex justify-center">
-          <img src={lessonImage} alt="Lesson illustration" width="400" height="250" className="rounded shadow" />
-        </div>
-      )}
     </section>
   );
 };
