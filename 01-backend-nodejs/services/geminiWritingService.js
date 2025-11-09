@@ -3,6 +3,10 @@ require("dotenv").config();
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
+if (!GEMINI_API_KEY) {
+  console.error("GEMINI_API_KEY not found in environment variables!");
+}
+
 /**
  * Chấm bài Writing IELTS bằng AI Gemini
  * @param {Object} params
@@ -72,6 +76,11 @@ Return ONLY a valid JSON object (no markdown, no explanations outside JSON) with
 `;
 
   try {
+    console.log("🤖 Calling Gemini API for essay evaluation...");
+    console.log("Task Type:", taskType);
+    console.log("Word Count:", wordCount);
+    console.log("Essay length:", essayText.length, "characters");
+    
     const res = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
       {
@@ -89,12 +98,23 @@ Return ONLY a valid JSON object (no markdown, no explanations outside JSON) with
     );
 
     const data = await res.json();
+    console.log("📥 Gemini API response status:", res.status);
+    
+    if (!res.ok) {
+      console.error("❌ Gemini API error:", data);
+      throw new Error(`Gemini API returned ${res.status}: ${JSON.stringify(data)}`);
+    }
+    
     const responseText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
     
     if (!responseText) {
+      console.error("❌ No response text from Gemini");
+      console.error("Full API response:", JSON.stringify(data, null, 2));
       throw new Error("No response from Gemini API");
     }
 
+    console.log("✅ Got response from Gemini, length:", responseText.length);
+    
     // Extract JSON from response (remove markdown code blocks if present)
     let jsonText = responseText.trim();
     if (jsonText.startsWith('```json')) {
@@ -103,17 +123,24 @@ Return ONLY a valid JSON object (no markdown, no explanations outside JSON) with
       jsonText = jsonText.replace(/```\n?/g, '');
     }
 
+    console.log("📝 Parsing JSON response...");
     const evaluation = JSON.parse(jsonText);
     
     // Validate response structure
     if (!evaluation.scores || !evaluation.overall_feedback) {
+      console.error("❌ Invalid response structure");
+      console.error("Evaluation object:", evaluation);
       throw new Error("Invalid response structure from Gemini");
     }
 
+    console.log("✅ Essay evaluated successfully!");
+    console.log("Overall band:", evaluation.scores.overall_band);
     return evaluation;
     
   } catch (error) {
-    console.error("Lỗi khi gọi Gemini API cho Writing evaluation:", error);
+    console.error("❌ Lỗi khi gọi Gemini API cho Writing evaluation:", error);
+    console.error("Error details:", error.message);
+    console.error("Stack:", error.stack);
     
     // Return fallback response
     return {
@@ -124,7 +151,7 @@ Return ONLY a valid JSON object (no markdown, no explanations outside JSON) with
         grammar_accuracy: 5.0,
         overall_band: 5.0
       },
-      overall_feedback: "Unable to evaluate essay at this time. Please try again.",
+      overall_feedback: "Unable to evaluate essay at this time. Please try again. Error: " + error.message,
       strengths: "N/A",
       weaknesses: "N/A",
       grammar_errors: [],
