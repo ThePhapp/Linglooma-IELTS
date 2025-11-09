@@ -51,7 +51,7 @@ const chatRoutes = require("./routes/chatRoutes.js");
 // -------------------
 // Public routes (không cần JWT)
 app.use("/api/users", userRoutes); // chứa /register, /login
-app.use("/api/auth", authRoutes);
+app.use("/api", authRoutes);
 
 // -------------------
 // JWT middleware chỉ áp dụng cho private routes
