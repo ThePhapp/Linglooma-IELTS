@@ -6,7 +6,7 @@ import { BookOpen, Clock, Award, TrendingUp } from 'lucide-react';
 // Sample data nếu API không có dữ liệu
 const SAMPLE_PASSAGES = [
   {
-    id: 'sample-1',
+    id: 1,
     title: 'The Impact of Climate Change on Marine Life',
     difficulty: 'Medium',
     topic: 'Environment',
@@ -17,7 +17,7 @@ const SAMPLE_PASSAGES = [
     questions_count: 10
   },
   {
-    id: 'sample-2',
+    id: 2,
     title: 'Artificial Intelligence in Modern Healthcare',
     difficulty: 'Hard',
     topic: 'Technology',
@@ -28,7 +28,7 @@ const SAMPLE_PASSAGES = [
     questions_count: 13
   },
   {
-    id: 'sample-3',
+    id: 3,
     title: 'The History of Ancient Egyptian Civilization',
     difficulty: 'Academic',
     topic: 'History',
@@ -39,7 +39,7 @@ const SAMPLE_PASSAGES = [
     questions_count: 15
   },
   {
-    id: 'sample-4',
+    id: 4,
     title: 'Urban Gardening and Sustainable Living',
     difficulty: 'Easy',
     topic: 'Lifestyle',
@@ -50,7 +50,7 @@ const SAMPLE_PASSAGES = [
     questions_count: 8
   },
   {
-    id: 'sample-5',
+    id: 5,
     title: 'The Evolution of Social Media Platforms',
     difficulty: 'Medium',
     topic: 'Technology',
@@ -61,7 +61,7 @@ const SAMPLE_PASSAGES = [
     questions_count: 12
   },
   {
-    id: 'sample-6',
+    id: 6,
     title: 'Renewable Energy: The Future of Power',
     difficulty: 'Hard',
     topic: 'Science',
@@ -72,7 +72,7 @@ const SAMPLE_PASSAGES = [
     questions_count: 14
   },
   {
-    id: 'sample-7',
+    id: 7,
     title: 'Traditional Festivals Around the World',
     difficulty: 'Easy',
     topic: 'Culture',
@@ -83,7 +83,7 @@ const SAMPLE_PASSAGES = [
     questions_count: 9
   },
   {
-    id: 'sample-8',
+    id: 8,
     title: 'The Psychology of Decision Making',
     difficulty: 'Academic',
     topic: 'Psychology',
@@ -94,7 +94,7 @@ const SAMPLE_PASSAGES = [
     questions_count: 13
   },
   {
-    id: 'sample-9',
+    id: 9,
     title: 'Space Exploration: Mars Missions',
     difficulty: 'Medium',
     topic: 'Science',
@@ -105,7 +105,7 @@ const SAMPLE_PASSAGES = [
     questions_count: 11
   },
   {
-    id: 'sample-10',
+    id: 10,
     title: 'Modern Architecture and Design Principles',
     difficulty: 'Medium',
     topic: 'Architecture',
@@ -116,7 +116,7 @@ const SAMPLE_PASSAGES = [
     questions_count: 10
   },
   {
-    id: 'sample-11',
+    id: 11,
     title: 'The Importance of Sleep for Health',
     difficulty: 'Easy',
     topic: 'Health',
@@ -127,7 +127,7 @@ const SAMPLE_PASSAGES = [
     questions_count: 8
   },
   {
-    id: 'sample-12',
+    id: 12,
     title: 'Global Economic Trends in the 21st Century',
     difficulty: 'Hard',
     topic: 'Economics',
