@@ -51,7 +51,7 @@ pool.connect((err, client, release) => {
             console.error('  - Is the database running?');
         }
     } else {
-        console.log('✅ Connected to PostgreSQL database successfully!');
+        console.log('Connected to PostgreSQL database successfully!');
         if (process.env.DATABASE_URL) {
             console.log('   Source: Supabase/Cloud (DATABASE_URL)');
         } else {

@@ -11,7 +11,7 @@ async function getAllPrompts(req, res) {
       data: prompts
     });
   } catch (error) {
-    console.error('Error getting writing prompts:', error);
+    console.error('❌ Error getting writing prompts:', error.message);
     res.status(500).json({
       success: false,
       message: 'Failed to get writing prompts',
@@ -40,7 +40,7 @@ async function getPromptById(req, res) {
       data: prompt
     });
   } catch (error) {
-    console.error('Error getting writing prompt:', error);
+    console.error('❌ Error getting writing prompt:', error.message);
     res.status(500).json({
       success: false,
       message: 'Failed to get writing prompt',

@@ -63,7 +63,7 @@ It uses AI to evaluate Speaking skills, visualize learning progress, and improve
 | Frontend  | React, Bootstrap, HTML, CSS                     |
 | Backend   | Node.js, Express.js                             |
 | AI Engine | Azure Text Analytics, Gemini API                |
-| Database  | PostgreSQL                                      |
+| Database  | PostgreSQL, Supabase                            |
 | Security  | JWT, OAuth 2.0, HTTPS                           |
 | Testing   | Cypress (E2E, Frontend), Jest (Backend)          |
 | Others    | REST API, Docker, WebSocket (optional)          |
@@ -112,6 +112,7 @@ Linglooma-IELTS/
  ``` 
 ## 🛠 How to Run Locally
 
+### Quick Start (Local PostgreSQL)
 ```bash
 git clone https://github.com/ThePhapp/Linglooma-IELTS.git
 cd Linglooma-IELTS
@@ -119,7 +120,27 @@ npm install
 npm start
 ```
 
-> ⚠️ Configure `.env` with your Azure and Firebase credentials before running
+### Using Supabase (Recommended for Production)
+```bash
+# 1. Clone repository
+git clone https://github.com/ThePhapp/Linglooma-IELTS.git
+cd Linglooma-IELTS
+
+# 2. Setup Supabase database
+# Follow instructions in SUPABASE_SETUP_GUIDE.md
+
+# 3. Configure environment
+cd 01-backend-nodejs
+cp .env.example .env
+# Edit .env and add your DATABASE_URL from Supabase
+
+# 4. Install & Run
+npm install
+npm start
+```
+
+> ⚠️ Configure `.env` with your DATABASE_URL, Azure, and Gemini credentials before running  
+> 📖 See [SUPABASE_SETUP_GUIDE.md](./SUPABASE_SETUP_GUIDE.md) for detailed setup instructions
 
 ---
 
