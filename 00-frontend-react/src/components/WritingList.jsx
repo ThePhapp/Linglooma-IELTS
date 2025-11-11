@@ -17,9 +17,12 @@ const WritingList = () => {
     try {
       setLoading(true);
       const response = await axios.get('/api/writing');
-      
-      if (response.data.success) {
+      if (response?.data?.data && Array.isArray(response.data.data)) {
         setPrompts(response.data.data);
+      } else if (response?.data && Array.isArray(response.data)) {
+        setPrompts(response.data);
+      } else if (Array.isArray(response)) {
+        setPrompts(response);
       } else {
         setError('Failed to load writing prompts');
       }

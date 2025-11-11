@@ -32,9 +32,49 @@ const getPassageById = async (passageId) => {
         [passageId]
     );
 
+    // Normalize options for each question so frontend can safely iterate
+    const normalizedQuestions = questionsResult.rows.map(q => {
+        let opts = q.options;
+
+        // If options is stored as JSONB object mapping (e.g. {"A": "...", "B": "..."})
+        if (opts && typeof opts === 'object' && !Array.isArray(opts)) {
+            // Convert to array of { id, option_text }
+            opts = Object.entries(opts).map(([key, val]) => ({ id: key, option_text: val }));
+        } else if (Array.isArray(opts)) {
+            // Ensure array elements have id and option_text fields
+            opts = opts.map((o, idx) => {
+                if (o && typeof o === 'object' && (o.option_text || o.text || o.label)) {
+                    return { id: o.id ?? idx, option_text: o.option_text ?? o.text ?? o.label };
+                }
+                return { id: idx, option_text: String(o) };
+            });
+        } else {
+            // No options stored (e.g. true/false/not given type) -> provide sensible defaults
+            if (q.question_type && q.question_type.toLowerCase().includes('true')) {
+                opts = [
+                    { id: 'TRUE', option_text: 'TRUE' },
+                    { id: 'FALSE', option_text: 'FALSE' },
+                    { id: 'NOT GIVEN', option_text: 'NOT GIVEN' }
+                ];
+            } else {
+                // Fallback: empty array
+                opts = [];
+            }
+        }
+
+        return {
+            id: q.id,
+            question_text: q.question_text,
+            question_type: q.question_type,
+            options: opts,
+            order_number: q.order_number,
+            points: q.points
+        };
+    });
+
     return {
         passage: passageResult.rows[0],
-        questions: questionsResult.rows
+        questions: normalizedQuestions
     };
 };
 

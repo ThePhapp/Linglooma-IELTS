@@ -32,10 +32,17 @@ const WritingEditor = () => {
     try {
       setLoading(true);
       const response = await axios.get(`/api/writing/${id}`);
-      
-      if (response.data.success) {
-        setPrompt(response.data.data);
-        setTimeRemaining(response.data.data.time_limit * 60); // Convert to seconds
+
+      let payload = response;
+      if (response?.data?.data) {
+        payload = response.data.data;
+      } else if (response?.data) {
+        payload = response.data;
+      }
+
+      if (payload) {
+        setPrompt(payload);
+        if (payload.time_limit) setTimeRemaining(payload.time_limit * 60);
       } else {
         setError('Failed to load writing prompt');
       }
@@ -92,12 +99,11 @@ const WritingEditor = () => {
         }
       );
 
-      if (response.data.success) {
-        setResult(response.data.data);
-        setTimerStarted(false);
-      } else {
-        alert('Failed to submit essay');
-      }
+      // Normalize submit response
+      const submitPayload = response?.data?.data ?? response?.data ?? response;
+      const resultData = submitPayload?.data ?? submitPayload;
+      setResult(resultData);
+      setTimerStarted(false);
     } catch (err) {
       console.error('Error submitting essay:', err);
       if (err.response?.status === 401) {

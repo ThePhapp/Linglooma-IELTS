@@ -27,8 +27,11 @@ const WritingHistory = () => {
         }
       });
 
-      if (response.data.success) {
-        setSubmissions(response.data.data);
+      // Normalize response
+      const payload = response?.data ?? response;
+      const submissionsData = payload?.data ?? payload;
+      if (Array.isArray(submissionsData)) {
+        setSubmissions(submissionsData);
       } else {
         setError('Failed to load submission history');
       }

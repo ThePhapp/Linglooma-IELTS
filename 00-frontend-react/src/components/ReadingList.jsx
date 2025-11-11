@@ -152,11 +152,14 @@ const ReadingList = () => {
     try {
       setLoading(true);
       const response = await axios.get('/api/reading');
-      // Nếu API trả về dữ liệu, dùng dữ liệu từ API
-      if (response.data.data && response.data.data.length > 0) {
+      if (response?.data?.data && Array.isArray(response.data.data) && response.data.data.length > 0) {
         setPassages(response.data.data);
+      } else if (response?.data && Array.isArray(response.data) && response.data.length > 0) {
+        setPassages(response.data);
+      } else if (Array.isArray(response) && response.length > 0) {
+        setPassages(response);
       } else {
-        // Nếu không có dữ liệu từ API, dùng sample data
+        // fallback to sample data
         setPassages(SAMPLE_PASSAGES);
       }
     } catch (error) {

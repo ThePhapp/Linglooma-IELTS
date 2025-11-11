@@ -29,8 +29,11 @@ const WritingDetail = () => {
         }
       });
 
-      if (response.data.success) {
-        setDetail(response.data.data);
+      // Normalize response
+      const payload = response?.data ?? response;
+      const detailObj = payload?.data ?? payload;
+      if (detailObj) {
+        setDetail(detailObj);
       } else {
         setError('Failed to load submission detail');
       }
