@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import axios from '@/utils/axios.customize';
 
 const WritingDetail = () => {
   const { submissionId } = useParams();
@@ -29,8 +29,11 @@ const WritingDetail = () => {
         }
       });
 
-      if (response.data.success) {
-        setDetail(response.data.data);
+      // Normalize response
+      const payload = response?.data ?? response;
+      const detailObj = payload?.data ?? payload;
+      if (detailObj) {
+        setDetail(detailObj);
       } else {
         setError('Failed to load submission detail');
       }

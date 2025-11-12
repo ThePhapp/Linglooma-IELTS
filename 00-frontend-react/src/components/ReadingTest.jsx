@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import axios from '@/utils/axios.customize';
 import { useParams, useNavigate } from 'react-router-dom';
 
 const ReadingTest = () => {
@@ -20,9 +20,18 @@ const ReadingTest = () => {
     try {
       setLoading(true);
       const response = await axios.get(`/api/reading/${id}`);
-      const { passage, questions } = response.data.data;
+      let payload = response;
+      if (response?.data?.data) {
+        // plain axios -> response.data.data
+        payload = response.data.data;
+      } else if (response?.data) {
+        // axios.customize -> response.data
+        payload = response.data;
+      }
+
+      const { passage, questions } = payload;
       setPassage(passage);
-      setQuestions(questions);
+      setQuestions(questions || []);
       setAnswers({});
       setResult(null);
     } catch (error) {
@@ -65,7 +74,9 @@ const ReadingTest = () => {
       const payload = {
         answers: Object.entries(answers).map(([questionId, selectedOptionId]) => ({
           questionId: parseInt(questionId),
-          selectedOptionId: parseInt(selectedOptionId)
+          // option ids can be letters like 'A' or numbers; send both forms so backend can handle either
+          selectedOptionId: selectedOptionId,
+          userAnswer: String(selectedOptionId)
         }))
       };
 
@@ -79,7 +90,10 @@ const ReadingTest = () => {
         }
       );
 
-      setResult(response.data.data);
+      // Normalize submit response and set the inner result object
+      const submitPayload = response?.data?.data ?? response?.data ?? response;
+      const resultData = submitPayload?.data ?? submitPayload;
+      setResult(resultData);
     } catch (error) {
       console.error('Error submitting reading:', error);
       
@@ -141,11 +155,18 @@ const ReadingTest = () => {
       <div className="bg-white rounded-lg shadow-md p-6 mb-8">
         <h2 className="text-xl font-semibold mb-4">Reading Passage</h2>
         <div className="prose max-w-none">
-          {passage.passage.split('\n\n').map((paragraph, idx) => (
-            <p key={idx} className="mb-4 text-justify leading-relaxed">
-              {paragraph}
-            </p>
-          ))}
+          {(() => {
+            // Some DB rows may use different field names for the passage text.
+            const passageText = passage?.passage ?? passage?.content ?? passage?.passage_text ?? '';
+            if (!passageText) {
+              return <p className="mb-4 text-justify leading-relaxed text-gray-500">No passage content available.</p>;
+            }
+            return passageText.split('\n\n').map((paragraph, idx) => (
+              <p key={idx} className="mb-4 text-justify leading-relaxed">
+                {paragraph}
+              </p>
+            ));
+          })()}
         </div>
       </div>
 
@@ -162,7 +183,8 @@ const ReadingTest = () => {
             <div className="space-y-3 ml-4">
               {question.options.map((option) => {
                 const isSelected = answers[question.id] === option.id;
-                const isCorrect = result?.details.find(d => d.questionId === question.id)?.correctOptionId === option.id;
+                const questionDetail = result?.details?.find(d => d.questionId === question.id);
+                const isCorrect = questionDetail?.correctOptionId === option.id || questionDetail?.isCorrect === true;
                 const isWrong = result && isSelected && !isCorrect;
                 
                 return (

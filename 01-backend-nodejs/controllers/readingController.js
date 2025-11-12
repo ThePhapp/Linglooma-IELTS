@@ -9,7 +9,7 @@ const getAllPassages = async (req, res) => {
             data: result.rows
         });
     } catch (error) {
-        console.error('Error getting passages:', error);
+        console.error('❌ Error getting passages:', error.message);
         return res.status(500).json({
             success: false,
             message: 'Error fetching reading passages',
@@ -36,7 +36,7 @@ const getPassageById = async (req, res) => {
             data
         });
     } catch (error) {
-        console.error('Error getting passage:', error);
+        console.error('❌ Error getting passage:', error.message);
         return res.status(500).json({
             success: false,
             message: 'Error fetching reading passage',
@@ -86,10 +86,10 @@ const submitReading = async (req, res) => {
             data: result
         });
     } catch (error) {
-        console.error('Error submitting reading:', error);
+        console.error('❌ Error submitting reading:', error.message);
         return res.status(500).json({
             success: false,
-            message: 'Error submitting reading test',
+            message: 'Error submitting reading answers',
             error: error.message
         });
     }
@@ -115,7 +115,7 @@ const getStudentResults = async (req, res) => {
             data: result.rows
         });
     } catch (error) {
-        console.error('Error getting student results:', error);
+        console.error('❌ Error getting student results:', error.message);
         return res.status(500).json({
             success: false,
             message: 'Error fetching student results',
@@ -151,7 +151,7 @@ const getResultDetail = async (req, res) => {
             data
         });
     } catch (error) {
-        console.error('Error getting result detail:', error);
+        console.error('❌ Error getting result detail:', error.message);
         return res.status(500).json({
             success: false,
             message: 'Error fetching result detail',

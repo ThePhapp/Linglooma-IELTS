@@ -3,8 +3,9 @@ const client = require('../db');
 // Lấy tất cả bài đọc
 const getAllPassages = async () => {
     const result = await client.query(
-        `SELECT id, title, difficulty, topic, image, created_at 
-         FROM reading_passage 
+        `SELECT id, title, difficulty, topic, image_url as image, created_at 
+         FROM reading_passages 
+         WHERE is_active = true
          ORDER BY created_at DESC`
     );
     return result;
@@ -14,7 +15,7 @@ const getAllPassages = async () => {
 const getPassageById = async (passageId) => {
     // Lấy thông tin bài đọc
     const passageResult = await client.query(
-        'SELECT * FROM reading_passage WHERE id = $1',
+        'SELECT id, title, passage_text, topic, difficulty, reading_time, image_url, author, source FROM reading_passages WHERE id = $1',
         [passageId]
     );
     
@@ -22,103 +23,116 @@ const getPassageById = async (passageId) => {
         return null;
     }
 
-    // Lấy câu hỏi của bài đọc
+    // Lấy câu hỏi của bài đọc (không trả về correct_answer)
     const questionsResult = await client.query(
-        `SELECT id, question_text, question_type, question_order 
-         FROM reading_question 
-         WHERE passageId = $1 
-         ORDER BY question_order`,
+        `SELECT id, question_text, question_type, options, order_number, points 
+         FROM reading_questions 
+         WHERE passage_id = $1 
+         ORDER BY order_number`,
         [passageId]
     );
 
-    // Lấy các lựa chọn cho từng câu hỏi (KHÔNG trả về is_correct)
-    const questions = await Promise.all(
-        questionsResult.rows.map(async (question) => {
-            const optionsResult = await client.query(
-                `SELECT id, option_text, option_order 
-                 FROM reading_option 
-                 WHERE questionId = $1 
-                 ORDER BY option_order`,
-                [question.id]
-            );
-            
-            return {
-                ...question,
-                options: optionsResult.rows
-            };
-        })
-    );
+    // Normalize options for each question so frontend can safely iterate
+    const normalizedQuestions = questionsResult.rows.map(q => {
+        let opts = q.options;
+
+        // If options is stored as JSONB object mapping (e.g. {"A": "...", "B": "..."})
+        if (opts && typeof opts === 'object' && !Array.isArray(opts)) {
+            // Convert to array of { id, option_text }
+            opts = Object.entries(opts).map(([key, val]) => ({ id: key, option_text: val }));
+        } else if (Array.isArray(opts)) {
+            // Ensure array elements have id and option_text fields
+            opts = opts.map((o, idx) => {
+                if (o && typeof o === 'object' && (o.option_text || o.text || o.label)) {
+                    return { id: o.id ?? idx, option_text: o.option_text ?? o.text ?? o.label };
+                }
+                return { id: idx, option_text: String(o) };
+            });
+        } else {
+            // No options stored (e.g. true/false/not given type) -> provide sensible defaults
+            if (q.question_type && q.question_type.toLowerCase().includes('true')) {
+                opts = [
+                    { id: 'TRUE', option_text: 'TRUE' },
+                    { id: 'FALSE', option_text: 'FALSE' },
+                    { id: 'NOT GIVEN', option_text: 'NOT GIVEN' }
+                ];
+            } else {
+                // Fallback: empty array
+                opts = [];
+            }
+        }
+
+        return {
+            id: q.id,
+            question_text: q.question_text,
+            question_type: q.question_type,
+            options: opts,
+            order_number: q.order_number,
+            points: q.points
+        };
+    });
 
     return {
         passage: passageResult.rows[0],
-        questions
+        questions: normalizedQuestions
     };
 };
 
 // Chấm bài và lưu kết quả
 const submitReading = async (studentId, passageId, answers) => {
-    // answers = [{questionId: 1, selectedOptionId: 2}, ...]
+    // answers = [{questionId: 1, userAnswer: "C"}, ...]
     
     // Lấy tất cả câu hỏi và đáp án đúng
     const questionsResult = await client.query(
-        `SELECT rq.id as question_id, ro.id as correct_option_id
-         FROM reading_question rq
-         INNER JOIN reading_option ro ON rq.id = ro.questionId
-         WHERE rq.passageId = $1 AND ro.is_correct = TRUE
-         ORDER BY rq.question_order`,
+        `SELECT id, correct_answer, points
+         FROM reading_questions
+         WHERE passage_id = $1
+         ORDER BY order_number`,
         [passageId]
     );
 
     const correctAnswers = new Map(
-        questionsResult.rows.map(row => [row.question_id, row.correct_option_id])
+        questionsResult.rows.map(row => [row.id, { answer: row.correct_answer, points: row.points }])
     );
 
-    let correctCount = 0;
+    let totalScore = 0;
+    let maxScore = 0;
     const answerDetails = [];
 
     // Chấm từng câu
     for (const answer of answers) {
-        const correctOptionId = correctAnswers.get(answer.questionId);
-        const isCorrect = correctOptionId === answer.selectedOptionId;
+        const correct = correctAnswers.get(answer.questionId);
+        if (!correct) continue;
+        
+        const isCorrect = correct.answer.toLowerCase().trim() === answer.userAnswer.toLowerCase().trim();
+        maxScore += correct.points;
         
         if (isCorrect) {
-            correctCount++;
+            totalScore += correct.points;
         }
+
+        // Lưu câu trả lời vào database
+        await client.query(
+            `INSERT INTO reading_answers (user_id, passage_id, question_id, user_answer, is_correct, time_spent)
+             VALUES ($1, $2, $3, $4, $5, $6)`,
+            [studentId, passageId, answer.questionId, answer.userAnswer, isCorrect, answer.timeSpent || 0]
+        );
 
         answerDetails.push({
             questionId: answer.questionId,
-            selectedOptionId: answer.selectedOptionId,
-            correctOptionId: correctOptionId,
-            isCorrect: isCorrect
+            userAnswer: answer.userAnswer,
+            correctAnswer: correct.answer,
+            isCorrect: isCorrect,
+            points: isCorrect ? correct.points : 0
         });
     }
 
-    const totalQuestions = correctAnswers.size;
-    const percentage = totalQuestions > 0 ? (correctCount / totalQuestions) * 100 : 0;
-
-    // Lưu kết quả tổng thể
-    const resultInsert = await client.query(
-        `INSERT INTO reading_result (studentId, passageId, score, total_questions, percentage)
-         VALUES ($1, $2, $3, $4, $5)
-         RETURNING id`,
-        [studentId, passageId, correctCount, totalQuestions, percentage]
-    );
-
-    const resultId = resultInsert.rows[0].id;
-
-    // Lưu chi tiết từng câu trả lời
-    for (const detail of answerDetails) {
-        await client.query(
-            `INSERT INTO reading_answer_detail (resultId, questionId, selectedOptionId, is_correct)
-             VALUES ($1, $2, $3, $4)`,
-            [resultId, detail.questionId, detail.selectedOptionId, detail.isCorrect]
-        );
-    }
+    const percentage = maxScore > 0 ? (totalScore / maxScore) * 100 : 0;
 
     return {
-        resultId,
-        score: correctCount,
-        totalQuestions,
+        score: totalScore,
+        maxScore,
+        totalQuestions: correctAnswers.size,
         percentage: Math.round(percentage * 100) / 100,
         details: answerDetails
     };
@@ -127,19 +141,26 @@ const submitReading = async (studentId, passageId, answers) => {
 // Lấy lịch sử làm bài của học viên
 const getStudentResults = async (studentId, passageId = null) => {
     let query = `
-        SELECT rr.*, rp.title, rp.topic, rp.difficulty
-        FROM reading_result rr
-        INNER JOIN reading_passage rp ON rr.passageId = rp.id
-        WHERE rr.studentId = $1
+        SELECT 
+            ra.passage_id,
+            rp.title,
+            rp.topic,
+            rp.difficulty,
+            COUNT(ra.id) as total_answered,
+            SUM(CASE WHEN ra.is_correct THEN 1 ELSE 0 END) as correct_count,
+            MAX(ra.submitted_at) as last_attempt
+        FROM reading_answers ra
+        INNER JOIN reading_passages rp ON ra.passage_id = rp.id
+        WHERE ra.user_id = $1
     `;
     const params = [studentId];
 
     if (passageId) {
-        query += ' AND rr.passageId = $2';
+        query += ' AND ra.passage_id = $2';
         params.push(passageId);
     }
 
-    query += ' ORDER BY rr.completed_at DESC';
+    query += ' GROUP BY ra.passage_id, rp.title, rp.topic, rp.difficulty ORDER BY last_attempt DESC';
 
     const result = await client.query(query, params);
     return result;
@@ -147,36 +168,48 @@ const getStudentResults = async (studentId, passageId = null) => {
 
 // Lấy chi tiết kết quả một lần làm bài
 const getResultDetail = async (resultId, studentId) => {
-    // Kiểm tra quyền truy cập
-    const resultCheck = await client.query(
-        'SELECT * FROM reading_result WHERE id = $1 AND studentId = $2',
-        [resultId, studentId]
+    // resultId ở đây là passage_id
+    const passageId = resultId;
+    
+    // Lấy tất cả câu trả lời của user cho passage này
+    const answersResult = await client.query(
+        `SELECT 
+            ra.*,
+            rq.question_text,
+            rq.question_type,
+            rq.correct_answer,
+            rq.explanation,
+            rq.points
+         FROM reading_answers ra
+         INNER JOIN reading_questions rq ON ra.question_id = rq.id
+         WHERE ra.user_id = $1 AND ra.passage_id = $2
+         ORDER BY ra.submitted_at DESC, rq.order_number`,
+        [studentId, passageId]
     );
 
-    if (resultCheck.rows.length === 0) {
+    if (answersResult.rows.length === 0) {
         return null;
     }
 
-    // Lấy chi tiết câu trả lời
-    const detailsResult = await client.query(
-        `SELECT 
-            rad.*, 
-            rq.question_text,
-            rq.question_type,
-            ro_selected.option_text as selected_option_text,
-            ro_correct.option_text as correct_option_text
-         FROM reading_answer_detail rad
-         INNER JOIN reading_question rq ON rad.questionId = rq.id
-         LEFT JOIN reading_option ro_selected ON rad.selectedOptionId = ro_selected.id
-         INNER JOIN reading_option ro_correct ON rad.questionId = ro_correct.questionId AND ro_correct.is_correct = TRUE
-         WHERE rad.resultId = $1
-         ORDER BY rq.question_order`,
-        [resultId]
-    );
+    // Tính tổng điểm
+    let totalScore = 0;
+    let maxScore = 0;
+    answersResult.rows.forEach(row => {
+        maxScore += row.points;
+        if (row.is_correct) {
+            totalScore += row.points;
+        }
+    });
 
     return {
-        result: resultCheck.rows[0],
-        details: detailsResult.rows
+        result: {
+            passage_id: passageId,
+            user_id: studentId,
+            total_score: totalScore,
+            max_score: maxScore,
+            percentage: maxScore > 0 ? (totalScore / maxScore) * 100 : 0
+        },
+        details: answersResult.rows
     };
 };
 

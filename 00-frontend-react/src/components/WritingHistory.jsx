@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import axios from '@/utils/axios.customize';
 
 const WritingHistory = () => {
   const [submissions, setSubmissions] = useState([]);
@@ -27,8 +27,11 @@ const WritingHistory = () => {
         }
       });
 
-      if (response.data.success) {
-        setSubmissions(response.data.data);
+      // Normalize response
+      const payload = response?.data ?? response;
+      const submissionsData = payload?.data ?? payload;
+      if (Array.isArray(submissionsData)) {
+        setSubmissions(submissionsData);
       } else {
         setError('Failed to load submission history');
       }

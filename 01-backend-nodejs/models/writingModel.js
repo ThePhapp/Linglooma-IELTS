@@ -6,8 +6,9 @@ const { evaluateWritingWithGemini } = require('../services/geminiWritingService'
  */
 async function getAllPrompts() {
   const query = `
-    SELECT id, title, task_type, prompt_text, difficulty, topic, word_limit, time_limit
-    FROM writing_prompt
+    SELECT id, title, task_type, prompt, difficulty, topic, min_words as word_limit, time_limit
+    FROM writing_tasks
+    WHERE is_active = true
     ORDER BY task_type, difficulty, id
   `;
   const result = await pool.query(query);
@@ -19,9 +20,9 @@ async function getAllPrompts() {
  */
 async function getPromptById(promptId) {
   const query = `
-    SELECT id, title, task_type, prompt_text, difficulty, topic, word_limit, time_limit
-    FROM writing_prompt
-    WHERE id = $1
+    SELECT id, title, task_type, prompt, difficulty, topic, min_words as word_limit, time_limit, sample_answer
+    FROM writing_tasks
+    WHERE id = $1 AND is_active = true
   `;
   const result = await pool.query(query, [promptId]);
   return result.rows[0];
@@ -38,8 +39,8 @@ async function submitWriting({ promptId, studentId, essayText }) {
     
     // Lấy thông tin đề bài
     const promptQuery = `
-      SELECT task_type, prompt_text, word_limit
-      FROM writing_prompt
+      SELECT task_type, prompt, min_words as word_limit
+      FROM writing_tasks
       WHERE id = $1
     `;
     const promptResult = await client.query(promptQuery, [promptId]);
@@ -52,9 +53,9 @@ async function submitWriting({ promptId, studentId, essayText }) {
     // Đếm số từ trong bài viết
     const wordCount = essayText.trim().split(/\s+/).length;
     
-    // Lưu bài viết vào database
+    // Lưu bài viết vào database (writing_submissions)
     const submissionQuery = `
-      INSERT INTO writing_submission (promptid, studentid, essay_text, word_count)
+      INSERT INTO writing_submissions (task_id, user_id, essay_text, word_count)
       VALUES ($1, $2, $3, $4)
       RETURNING id, submitted_at
     `;
@@ -69,47 +70,45 @@ async function submitWriting({ promptId, studentId, essayText }) {
     console.log('Calling AI to evaluate essay...');
     const evaluation = await evaluateWritingWithGemini({
       taskType: prompt.task_type,
-      promptText: prompt.prompt_text,
+      promptText: prompt.prompt,
       essayText,
       wordCount
     });
     
-    // Lưu kết quả chấm bài
-    const resultQuery = `
-      INSERT INTO writing_result (
-        submissionid,
-        task_achievement,
-        coherence_cohesion,
-        lexical_resource,
-        grammar_accuracy,
-        overall_band,
-        overall_feedback,
-        strengths,
-        weaknesses,
-        grammar_errors,
-        vocabulary_suggestions,
-        structure_feedback,
-        improvement_tips
-      )
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+    // Lưu kết quả chấm bài vào writing_submissions (update)
+    const updateQuery = `
+      UPDATE writing_submissions
+      SET 
+        overall_band = $1,
+        task_achievement = $2,
+        coherence_cohesion = $3,
+        lexical_resource = $4,
+        grammatical_range = $5,
+        feedback_overall = $6,
+        feedback_task_achievement = $7,
+        feedback_coherence = $8,
+        feedback_vocabulary = $9,
+        feedback_grammar = $10,
+        suggestions = $11,
+        is_completed = true
+      WHERE id = $12
       RETURNING id
     `;
-    const resultValues = [
-      submission.id,
+    const updateValues = [
+      evaluation.scores.overall_band,
       evaluation.scores.task_achievement,
       evaluation.scores.coherence_cohesion,
       evaluation.scores.lexical_resource,
       evaluation.scores.grammar_accuracy,
-      evaluation.scores.overall_band,
       evaluation.overall_feedback,
-      evaluation.strengths,
-      evaluation.weaknesses,
-      JSON.stringify(evaluation.grammar_errors),
-      JSON.stringify(evaluation.vocabulary_suggestions),
-      evaluation.structure_feedback,
-      evaluation.improvement_tips
+      evaluation.strengths || '',
+      evaluation.structure_feedback || '',
+      JSON.stringify(evaluation.vocabulary_suggestions || []),
+      JSON.stringify(evaluation.grammar_errors || []),
+      evaluation.improvement_tips || '',
+      submission.id
     ];
-    const resultData = await client.query(resultQuery, resultValues);
+    await client.query(updateQuery, updateValues);
     
     await client.query('COMMIT');
     
@@ -118,7 +117,6 @@ async function submitWriting({ promptId, studentId, essayText }) {
       submissionId: submission.id,
       submittedAt: submission.submitted_at,
       wordCount,
-      resultId: resultData.rows[0].id,
       scores: evaluation.scores,
       feedback: {
         overall_feedback: evaluation.overall_feedback,
@@ -148,15 +146,14 @@ async function getStudentSubmissions(studentId) {
       s.id as submission_id,
       s.submitted_at,
       s.word_count,
-      p.title,
-      p.task_type,
-      p.difficulty,
-      p.topic,
-      r.overall_band
-    FROM writing_submission s
-    JOIN writing_prompt p ON s.promptid = p.id
-    LEFT JOIN writing_result r ON r.submissionid = s.id
-    WHERE s.studentid = $1
+      t.title,
+      t.task_type,
+      t.difficulty,
+      t.topic,
+      s.overall_band
+    FROM writing_submissions s
+    JOIN writing_tasks t ON s.task_id = t.id
+    WHERE s.user_id = $1
     ORDER BY s.submitted_at DESC
   `;
   const result = await pool.query(query, [studentId]);
@@ -173,29 +170,26 @@ async function getSubmissionDetail(submissionId, studentId) {
       s.essay_text,
       s.word_count,
       s.submitted_at,
-      p.title,
-      p.task_type,
-      p.prompt_text,
-      p.difficulty,
-      p.topic,
-      p.word_limit,
-      r.task_achievement,
-      r.coherence_cohesion,
-      r.lexical_resource,
-      r.grammar_accuracy,
-      r.overall_band,
-      r.overall_feedback,
-      r.strengths,
-      r.weaknesses,
-      r.grammar_errors,
-      r.vocabulary_suggestions,
-      r.structure_feedback,
-      r.improvement_tips,
-      r.evaluated_at
-    FROM writing_submission s
-    JOIN writing_prompt p ON s.promptid = p.id
-    LEFT JOIN writing_result r ON r.submissionid = s.id
-    WHERE s.id = $1 AND s.studentid = $2
+      t.title,
+      t.task_type,
+      t.prompt,
+      t.difficulty,
+      t.topic,
+      t.min_words as word_limit,
+      s.task_achievement,
+      s.coherence_cohesion,
+      s.lexical_resource,
+      s.grammatical_range as grammar_accuracy,
+      s.overall_band,
+      s.feedback_overall as overall_feedback,
+      s.feedback_task_achievement as strengths,
+      s.feedback_coherence as structure_feedback,
+      s.feedback_vocabulary as vocabulary_suggestions,
+      s.feedback_grammar as grammar_errors,
+      s.suggestions as improvement_tips
+    FROM writing_submissions s
+    JOIN writing_tasks t ON s.task_id = t.id
+    WHERE s.id = $1 AND s.user_id = $2
   `;
   const result = await pool.query(query, [submissionId, studentId]);
   

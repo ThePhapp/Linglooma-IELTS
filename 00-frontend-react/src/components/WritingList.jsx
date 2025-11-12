@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import axios from '@/utils/axios.customize';
 
 const WritingList = () => {
   const [prompts, setPrompts] = useState([]);
@@ -17,9 +17,12 @@ const WritingList = () => {
     try {
       setLoading(true);
       const response = await axios.get('/api/writing');
-      
-      if (response.data.success) {
+      if (response?.data?.data && Array.isArray(response.data.data)) {
         setPrompts(response.data.data);
+      } else if (response?.data && Array.isArray(response.data)) {
+        setPrompts(response.data);
+      } else if (Array.isArray(response)) {
+        setPrompts(response);
       } else {
         setError('Failed to load writing prompts');
       }

@@ -8,8 +8,11 @@ const instance = axios.create({
 // Alter defaults after instance has been created
 // Add a request interceptor
 instance.interceptors.request.use(function (config) {
-    // Do something before request is sent
-    config.headers.Authorization = `Bearer ${localStorage.getItem('access_token')}`;
+    // Only add Authorization header if token exists
+    const token = localStorage.getItem('access_token');
+    if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+    }
     return config;
 }, function (error) {
     // Do something with request error
