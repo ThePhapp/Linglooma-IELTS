@@ -1,10 +1,10 @@
 import { useNavigate } from "react-router-dom";
 import SidebarLink from "./Sidebar-link";
-import { Home, BookOpen, BarChart2, Settings, ClipboardList, MessageSquare, LogOut, Activity } from "lucide-react";
+import { Home, BookOpen, BarChart2, Settings, ClipboardList, MessageSquare, LogOut, Activity, X } from "lucide-react";
 import { useContext } from "react";
 import { AuthContext } from "@/components/context/auth.context";
 
-const Sidebar = () => {
+const Sidebar = ({ isOpen, onClose }) => {
     const navigate = useNavigate();
     const { auth, setAuth } = useContext(AuthContext);
 
@@ -22,18 +22,28 @@ const Sidebar = () => {
 
     return (
         <div className="w-72 bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 text-white flex flex-col h-full shadow-2xl border-r border-slate-700">
-            {/* Header */}
+            {/* Header with Close Button for Mobile */}
             <div className="p-6 border-b border-slate-700/50">
-                <div className="flex items-center gap-3">
-                    <div className="bg-gradient-to-br from-blue-500 to-purple-600 p-3 rounded-xl shadow-lg">
-                        <BookOpen className="h-6 w-6 text-white" />
+                <div className="flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-3 flex-1">
+                        <div className="bg-gradient-to-br from-blue-500 to-purple-600 p-3 rounded-xl shadow-lg">
+                            <BookOpen className="h-6 w-6 text-white" />
+                        </div>
+                        <div>
+                            <h2 className="text-xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+                                Linglooma
+                            </h2>
+                            <p className="text-xs text-slate-400">IELTS Learning Platform</p>
+                        </div>
                     </div>
-                    <div>
-                        <h2 className="text-xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-                            Linglooma
-                        </h2>
-                        <p className="text-xs text-slate-400">IELTS Learning Platform</p>
-                    </div>
+                    {/* Close button for mobile */}
+                    <button
+                        onClick={onClose}
+                        className="lg:hidden p-2 hover:bg-slate-800 rounded-lg transition-colors"
+                        aria-label="Close sidebar"
+                    >
+                        <X className="h-5 w-5" />
+                    </button>
                 </div>
             </div>
 

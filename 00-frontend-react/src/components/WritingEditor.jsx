@@ -158,44 +158,44 @@ const WritingEditor = () => {
   // Show result page after submission
   if (result) {
     return (
-      <div className="container mx-auto px-4 py-8 max-w-5xl">
-        <div className="bg-white rounded-lg shadow-lg p-8">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8 max-w-5xl">
+        <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6 lg:p-8">
           {/* Header */}
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">Essay Evaluation Results</h1>
-          <p className="text-gray-600 mb-6">{prompt.title}</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">Essay Evaluation Results</h1>
+          <p className="text-sm sm:text-base text-gray-600 mb-6">{prompt.title}</p>
 
           {/* Overall Band Score */}
-          <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg p-6 mb-6">
+          <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg p-4 sm:p-6 mb-6">
             <div className="text-center">
-              <p className="text-lg mb-2">Overall Band Score</p>
-              <p className="text-6xl font-bold">{result.scores.overall_band}</p>
-              <p className="mt-2 text-blue-100">Words: {result.wordCount}</p>
+              <p className="text-base sm:text-lg mb-2">Overall Band Score</p>
+              <p className="text-4xl sm:text-5xl lg:text-6xl font-bold">{result.scores.overall_band}</p>
+              <p className="mt-2 text-sm sm:text-base text-blue-100">Words: {result.wordCount}</p>
             </div>
           </div>
 
           {/* Individual Scores */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-            <div className="bg-gray-50 rounded-lg p-4 text-center">
-              <p className="text-sm text-gray-600 mb-1">Task Achievement</p>
-              <p className={`text-3xl font-bold ${getBandColor(result.scores.task_achievement)}`}>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
+            <div className="bg-gray-50 rounded-lg p-3 sm:p-4 text-center">
+              <p className="text-xs sm:text-sm text-gray-600 mb-1">Task Achievement</p>
+              <p className={`text-2xl sm:text-3xl font-bold ${getBandColor(result.scores.task_achievement)}`}>
                 {result.scores.task_achievement}
               </p>
             </div>
-            <div className="bg-gray-50 rounded-lg p-4 text-center">
-              <p className="text-sm text-gray-600 mb-1">Coherence & Cohesion</p>
-              <p className={`text-3xl font-bold ${getBandColor(result.scores.coherence_cohesion)}`}>
+            <div className="bg-gray-50 rounded-lg p-3 sm:p-4 text-center">
+              <p className="text-xs sm:text-sm text-gray-600 mb-1">Coherence & Cohesion</p>
+              <p className={`text-2xl sm:text-3xl font-bold ${getBandColor(result.scores.coherence_cohesion)}`}>
                 {result.scores.coherence_cohesion}
               </p>
             </div>
-            <div className="bg-gray-50 rounded-lg p-4 text-center">
-              <p className="text-sm text-gray-600 mb-1">Lexical Resource</p>
-              <p className={`text-3xl font-bold ${getBandColor(result.scores.lexical_resource)}`}>
+            <div className="bg-gray-50 rounded-lg p-3 sm:p-4 text-center">
+              <p className="text-xs sm:text-sm text-gray-600 mb-1">Lexical Resource</p>
+              <p className={`text-2xl sm:text-3xl font-bold ${getBandColor(result.scores.lexical_resource)}`}>
                 {result.scores.lexical_resource}
               </p>
             </div>
-            <div className="bg-gray-50 rounded-lg p-4 text-center">
-              <p className="text-sm text-gray-600 mb-1">Grammar Accuracy</p>
-              <p className={`text-3xl font-bold ${getBandColor(result.scores.grammar_accuracy)}`}>
+            <div className="bg-gray-50 rounded-lg p-3 sm:p-4 text-center">
+              <p className="text-xs sm:text-sm text-gray-600 mb-1">Grammar Accuracy</p>
+              <p className={`text-2xl sm:text-3xl font-bold ${getBandColor(result.scores.grammar_accuracy)}`}>
                 {result.scores.grammar_accuracy}
               </p>
             </div>
@@ -203,22 +203,22 @@ const WritingEditor = () => {
 
           {/* Overall Feedback */}
           <div className="mb-6">
-            <h3 className="text-xl font-semibold mb-2">Overall Feedback</h3>
-            <p className="text-gray-700 bg-blue-50 p-4 rounded-lg">{result.feedback.overall_feedback}</p>
+            <h3 className="text-lg sm:text-xl font-semibold mb-2">Overall Feedback</h3>
+            <p className="text-sm sm:text-base text-gray-700 bg-blue-50 p-3 sm:p-4 rounded-lg">{result.feedback.overall_feedback}</p>
           </div>
 
           {/* Strengths & Weaknesses */}
-          <div className="grid md:grid-cols-2 gap-6 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-6">
             <div>
-              <h3 className="text-xl font-semibold mb-2 text-green-700">✅ Strengths</h3>
-              <div className="bg-green-50 p-4 rounded-lg">
-                <p className="text-gray-700 whitespace-pre-line">{result.feedback.strengths}</p>
+              <h3 className="text-lg sm:text-xl font-semibold mb-2 text-green-700">✅ Strengths</h3>
+              <div className="bg-green-50 p-3 sm:p-4 rounded-lg">
+                <p className="text-sm sm:text-base text-gray-700 whitespace-pre-line">{result.feedback.strengths}</p>
               </div>
             </div>
             <div>
-              <h3 className="text-xl font-semibold mb-2 text-red-700">⚠️ Areas to Improve</h3>
-              <div className="bg-red-50 p-4 rounded-lg">
-                <p className="text-gray-700 whitespace-pre-line">{result.feedback.weaknesses}</p>
+              <h3 className="text-lg sm:text-xl font-semibold mb-2 text-red-700">⚠️ Areas to Improve</h3>
+              <div className="bg-red-50 p-3 sm:p-4 rounded-lg">
+                <p className="text-sm sm:text-base text-gray-700 whitespace-pre-line">{result.feedback.weaknesses}</p>
               </div>
             </div>
           </div>
@@ -226,13 +226,13 @@ const WritingEditor = () => {
           {/* Grammar Errors */}
           {result.feedback.grammar_errors && result.feedback.grammar_errors.length > 0 && (
             <div className="mb-6">
-              <h3 className="text-xl font-semibold mb-3">📝 Grammar Errors & Corrections</h3>
+              <h3 className="text-lg sm:text-xl font-semibold mb-3">📝 Grammar Errors & Corrections</h3>
               <div className="space-y-3">
                 {result.feedback.grammar_errors.map((error, index) => (
-                  <div key={index} className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded">
-                    <p className="text-red-600 font-medium mb-1">❌ {error.error}</p>
-                    <p className="text-green-600 font-medium mb-2">✅ {error.correction}</p>
-                    <p className="text-gray-600 text-sm">{error.explanation}</p>
+                  <div key={index} className="bg-yellow-50 border-l-4 border-yellow-400 p-3 sm:p-4 rounded">
+                    <p className="text-sm sm:text-base text-red-600 font-medium mb-1">❌ {error.error}</p>
+                    <p className="text-sm sm:text-base text-green-600 font-medium mb-2">✅ {error.correction}</p>
+                    <p className="text-xs sm:text-sm text-gray-600">{error.explanation}</p>
                   </div>
                 ))}
               </div>
@@ -296,40 +296,40 @@ const WritingEditor = () => {
 
   // Editor page
   return (
-    <div className="container mx-auto px-4 py-8 max-w-6xl">
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8 max-w-6xl">
       <div className="bg-white rounded-lg shadow-lg overflow-hidden">
         {/* Header */}
-        <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6">
-          <div className="flex justify-between items-start mb-2">
-            <div>
-              <h1 className="text-2xl font-bold mb-1">{prompt.title}</h1>
-              <p className="text-blue-100">{prompt.task_type} - {prompt.difficulty}</p>
+        <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4 sm:p-6">
+          <div className="flex flex-col sm:flex-row justify-between items-start gap-3 sm:gap-0 mb-2">
+            <div className="flex-1">
+              <h1 className="text-xl sm:text-2xl font-bold mb-1">{prompt.title}</h1>
+              <p className="text-sm text-blue-100">{prompt.task_type} - {prompt.difficulty}</p>
             </div>
-            <div className="text-right">
-              <div className={`text-3xl font-bold ${timeRemaining < 300 ? 'text-red-300' : ''}`}>
+            <div className="text-left sm:text-right">
+              <div className={`text-2xl sm:text-3xl font-bold ${timeRemaining < 300 ? 'text-red-300' : ''}`}>
                 {formatTime(timeRemaining)}
               </div>
-              <div className="text-sm text-blue-100">Time Remaining</div>
+              <div className="text-xs sm:text-sm text-blue-100">Time Remaining</div>
             </div>
           </div>
         </div>
 
         {/* Prompt */}
-        <div className="p-6 bg-gray-50 border-b">
+        <div className="p-4 sm:p-6 bg-gray-50 border-b">
           <h3 className="font-semibold text-gray-800 mb-2">📋 Task:</h3>
-          <p className="text-gray-700 whitespace-pre-line">{prompt.prompt_text}</p>
-          <div className="mt-4 flex gap-4 text-sm text-gray-600">
-            <span>📝 Minimum {prompt.word_limit} words</span>
-            <span>⏱️ {prompt.time_limit} minutes</span>
-            <span>📚 Topic: {prompt.topic}</span>
+          <p className="text-sm sm:text-base text-gray-700 whitespace-pre-line">{prompt.prompt_text}</p>
+          <div className="mt-4 flex flex-wrap gap-2 sm:gap-4 text-xs sm:text-sm text-gray-600">
+            <span>📝 Min {prompt.word_limit} words</span>
+            <span>⏱️ {prompt.time_limit} min</span>
+            <span>📚 {prompt.topic}</span>
           </div>
         </div>
 
         {/* Editor */}
-        <div className="p-6">
-          <div className="flex justify-between items-center mb-2">
+        <div className="p-4 sm:p-6">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-2">
             <h3 className="font-semibold text-gray-800">Your Essay:</h3>
-            <div className="flex gap-4 text-sm">
+            <div className="flex gap-4 text-xs sm:text-sm">
               <span className={getWordCount() < prompt.word_limit ? 'text-red-600 font-semibold' : 'text-green-600 font-semibold'}>
                 {getWordCount()} / {prompt.word_limit} words
               </span>
@@ -339,34 +339,34 @@ const WritingEditor = () => {
           <textarea
             value={essayText}
             onChange={handleTextChange}
-            className="w-full h-96 p-4 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none resize-none font-mono"
+            className="w-full h-64 sm:h-80 lg:h-96 p-3 sm:p-4 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none resize-none font-mono text-sm sm:text-base"
             placeholder="Start typing your essay here..."
             disabled={submitting}
           />
 
           {/* Warning if word count is low */}
           {essayText.length > 0 && getWordCount() < prompt.word_limit && (
-            <p className="mt-2 text-sm text-red-600">
+            <p className="mt-2 text-xs sm:text-sm text-red-600">
               ⚠️ Your essay is below the minimum word count. You need at least {prompt.word_limit - getWordCount()} more words.
             </p>
           )}
         </div>
 
         {/* Action Buttons */}
-        <div className="p-6 bg-gray-50 flex gap-4">
+        <div className="p-4 sm:p-6 bg-gray-50 flex flex-col sm:flex-row gap-3 sm:gap-4">
           <button
             onClick={() => navigate('/admin/features/writing')}
-            className="px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white font-semibold rounded-lg transition"
+            className="px-4 sm:px-6 py-2.5 sm:py-3 bg-gray-600 hover:bg-gray-700 text-white font-semibold rounded-lg transition text-sm sm:text-base"
             disabled={submitting}
           >
             ← Back
           </button>
           <button
             onClick={handleSubmit}
-            className="flex-1 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition disabled:bg-gray-400 disabled:cursor-not-allowed"
+            className="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition disabled:bg-gray-400 disabled:cursor-not-allowed text-sm sm:text-base"
             disabled={submitting || essayText.trim().length === 0}
           >
-            {submitting ? '⏳ Evaluating with AI...' : '✅ Submit for Evaluation'}
+            {submitting ? '⏳ Evaluating with AI...' : 'Submit for Evaluation'}
           </button>
         </div>
       </div>
