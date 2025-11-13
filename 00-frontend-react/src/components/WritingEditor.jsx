@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from '@/utils/axios.customize';
+import { Save, AlertCircle, Lightbulb, TrendingUp, Target, Award, ArrowLeft } from 'lucide-react';
 
 const WritingEditor = () => {
   const { id } = useParams();
@@ -14,19 +15,44 @@ const WritingEditor = () => {
   const [result, setResult] = useState(null);
   const [timeRemaining, setTimeRemaining] = useState(null);
   const [timerStarted, setTimerStarted] = useState(false);
+  const [lastSaved, setLastSaved] = useState(null);
+  const [showTips, setShowTips] = useState(false);
 
   useEffect(() => {
     fetchPrompt();
   }, [id]);
 
+useEffect(() => {
+  if (timerStarted && timeRemaining > 0) {
+    const timer = setTimeout(() => {
+      setTimeRemaining((prev) => prev - 1);
+    }, 1000);
+    return () => clearTimeout(timer);
+  } else if (timeRemaining === 0) {
+    setTimerStarted(false);
+  }
+}, [timerStarted, timeRemaining]);
+
+  // Auto-save to localStorage
   useEffect(() => {
-    if (timerStarted && timeRemaining > 0) {
-      const timer = setTimeout(() => {
-        setTimeRemaining(timeRemaining - 1);
-      }, 1000);
-      return () => clearTimeout(timer);
+    if (essayText && prompt) {
+      const saveTimeout = setTimeout(() => {
+        localStorage.setItem(`essay_draft_${id}`, essayText);
+        setLastSaved(new Date());
+      }, 2000);
+      return () => clearTimeout(saveTimeout);
     }
-  }, [timeRemaining, timerStarted]);
+  }, [essayText, id, prompt]);
+
+  // Load saved draft on mount
+  useEffect(() => {
+    if (prompt && !essayText) {
+      const savedDraft = localStorage.getItem(`essay_draft_${id}`);
+      if (savedDraft) {
+        setEssayText(savedDraft);
+      }
+    }
+  }, [prompt, id]);
 
   const fetchPrompt = async () => {
     try {
@@ -63,6 +89,27 @@ const WritingEditor = () => {
 
   const getWordCount = () => {
     return essayText.trim().split(/\s+/).filter(word => word.length > 0).length;
+  };
+
+  const getCharCount = () => {
+    return essayText.length;
+  };
+
+  const getSentenceCount = () => {
+    return essayText.split(/[.!?]+/).filter(s => s.trim().length > 0).length;
+  };
+
+  const getProgress = () => {
+    if (!prompt?.word_limit) return 0;
+    return Math.min((getWordCount() / prompt.word_limit) * 100, 100);
+  };
+
+  const getProgressColor = () => {
+    const progress = getProgress();
+    if (progress >= 100) return 'from-green-500 to-emerald-500';
+    if (progress >= 75) return 'from-yellow-500 to-orange-500';
+    if (progress >= 50) return 'from-blue-500 to-cyan-500';
+    return 'from-red-500 to-pink-500';
   };
 
   const formatTime = (seconds) => {
@@ -133,16 +180,30 @@ const WritingEditor = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-xl">Loading prompt...</div>
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 flex items-center justify-center p-4">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-purple-600 mx-auto mb-4"></div>
+          <div className="text-xl font-semibold text-gray-700">Loading prompt...</div>
+          <p className="text-sm text-gray-500 mt-2">Please wait a moment</p>
+        </div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-xl text-red-600">{error}</div>
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 flex items-center justify-center p-4">
+        <div className="bg-white rounded-2xl shadow-2xl p-8 text-center max-w-md">
+          <AlertCircle className="h-16 w-16 text-red-500 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">Lỗi kết nối</h2>
+          <p className="text-gray-600 mb-6">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg transition-all transform hover:scale-105"
+          >
+            Thử lại
+          </button>
+        </div>
       </div>
     );
   }
@@ -317,7 +378,7 @@ const WritingEditor = () => {
         {/* Prompt */}
         <div className="p-4 sm:p-6 bg-gray-50 border-b">
           <h3 className="font-semibold text-gray-800 mb-2">📋 Task:</h3>
-          <p className="text-sm sm:text-base text-gray-700 whitespace-pre-line">{prompt.prompt_text}</p>
+          <p className="text-sm sm:text-base text-gray-700 whitespace-pre-line">{prompt.prompt}</p>
           <div className="mt-4 flex flex-wrap gap-2 sm:gap-4 text-xs sm:text-sm text-gray-600">
             <span>📝 Min {prompt.word_limit} words</span>
             <span>⏱️ {prompt.time_limit} min</span>

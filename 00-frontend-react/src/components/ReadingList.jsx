@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from '@/utils/axios.customize';
 import { useNavigate } from 'react-router-dom';
-import { BookOpen, Clock, Award, TrendingUp } from 'lucide-react';
+import { BookOpen, Clock, Award, TrendingUp, Search, Filter, X } from 'lucide-react';
 
 // Sample data nếu API không có dữ liệu
 const SAMPLE_PASSAGES = [
@@ -142,6 +142,9 @@ const SAMPLE_PASSAGES = [
 const ReadingList = () => {
   const [passages, setPassages] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedDifficulty, setSelectedDifficulty] = useState('all');
+  const [selectedTopic, setSelectedTopic] = useState('all');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -202,16 +205,37 @@ const ReadingList = () => {
     return icons[topic] || '📖';
   };
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-600 mx-auto mb-4"></div>
-          <div className="text-xl font-semibold text-gray-700">Đang tải danh sách bài đọc...</div>
+  // Skeleton Loader Component
+  const SkeletonCard = () => (
+    <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl overflow-hidden border-2 border-gray-100 animate-pulse">
+      <div className="h-2 bg-gradient-to-r from-gray-200 to-gray-300"></div>
+      <div className="h-48 bg-gradient-to-br from-gray-100 to-gray-200"></div>
+      <div className="p-6 space-y-4">
+        <div className="h-6 bg-gray-200 rounded w-3/4"></div>
+        <div className="h-4 bg-gray-100 rounded w-full"></div>
+        <div className="h-4 bg-gray-100 rounded w-5/6"></div>
+        <div className="flex gap-2">
+          <div className="h-8 bg-gray-200 rounded-full w-20"></div>
+          <div className="h-8 bg-gray-200 rounded-full w-24"></div>
         </div>
+        <div className="h-12 bg-gray-200 rounded-xl w-full"></div>
       </div>
-    );
-  }
+    </div>
+  );
+
+  // Filter passages based on search and filters
+  const filteredPassages = passages.filter(passage => {
+    const matchesSearch = passage.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         passage.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         passage.topic?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesDifficulty = selectedDifficulty === 'all' || passage.difficulty === selectedDifficulty;
+    const matchesTopic = selectedTopic === 'all' || passage.topic === selectedTopic;
+    return matchesSearch && matchesDifficulty && matchesTopic;
+  });
+
+  // Get unique topics for filter
+  const uniqueTopics = ['all', ...new Set(passages.map(p => p.topic).filter(Boolean))];
+  const difficulties = ['all', 'Easy', 'Medium', 'Hard', 'Academic'];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 p-6">
@@ -234,14 +258,14 @@ const ReadingList = () => {
 
           {/* Stats */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
-            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4">
+            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 hover:bg-white/20 transition-all duration-200">
               <div className="flex items-center gap-2 text-white/80 text-sm mb-1">
                 <Award className="h-4 w-4" />
                 <span>Total Passages</span>
               </div>
               <div className="text-2xl font-bold text-white">{passages.length}</div>
             </div>
-            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4">
+            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 hover:bg-white/20 transition-all duration-200">
               <div className="flex items-center gap-2 text-white/80 text-sm mb-1">
                 <TrendingUp className="h-4 w-4" />
                 <span>Topics</span>
@@ -250,14 +274,14 @@ const ReadingList = () => {
                 {new Set(passages.map(p => p.topic)).size}
               </div>
             </div>
-            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4">
+            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 hover:bg-white/20 transition-all duration-200">
               <div className="flex items-center gap-2 text-white/80 text-sm mb-1">
                 <Clock className="h-4 w-4" />
                 <span>Avg. Time</span>
               </div>
               <div className="text-2xl font-bold text-white">15 min</div>
             </div>
-            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4">
+            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 hover:bg-white/20 transition-all duration-200">
               <div className="flex items-center gap-2 text-white/80 text-sm mb-1">
                 <BookOpen className="h-4 w-4" />
                 <span>Questions</span>
@@ -267,13 +291,113 @@ const ReadingList = () => {
           </div>
         </div>
 
-      {passages.length === 0 ? (
-        <div className="text-center py-12">
-          <p className="text-xl text-gray-500">Chưa có bài đọc nào</p>
+        {/* Search and Filter Section */}
+        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-6 mb-8">
+          {/* Search Bar */}
+          <div className="relative mb-4">
+            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Tìm kiếm bài đọc theo tiêu đề, chủ đề..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-12 pr-10 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+            />
+            {searchTerm && (
+              <button
+                onClick={() => setSearchTerm('')}
+                className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            )}
+          </div>
+
+          {/* Filters */}
+          <div className="flex flex-wrap gap-3">
+            <div className="flex items-center gap-2">
+              <Filter className="h-4 w-4 text-gray-600" />
+              <span className="text-sm font-semibold text-gray-700">Lọc:</span>
+            </div>
+            
+            {/* Difficulty Filter */}
+            <select
+              value={selectedDifficulty}
+              onChange={(e) => setSelectedDifficulty(e.target.value)}
+              className="px-4 py-2 rounded-lg border-2 border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all text-sm font-medium"
+            >
+              {difficulties.map(diff => (
+                <option key={diff} value={diff}>
+                  {diff === 'all' ? 'Tất cả độ khó' : diff}
+                </option>
+              ))}
+            </select>
+
+            {/* Topic Filter */}
+            <select
+              value={selectedTopic}
+              onChange={(e) => setSelectedTopic(e.target.value)}
+              className="px-4 py-2 rounded-lg border-2 border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all text-sm font-medium"
+            >
+              {uniqueTopics.map(topic => (
+                <option key={topic} value={topic}>
+                  {topic === 'all' ? 'Tất cả chủ đề' : topic}
+                </option>
+              ))}
+            </select>
+
+            {/* Clear Filters */}
+            {(searchTerm || selectedDifficulty !== 'all' || selectedTopic !== 'all') && (
+              <button
+                onClick={() => {
+                  setSearchTerm('');
+                  setSelectedDifficulty('all');
+                  setSelectedTopic('all');
+                }}
+                className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm font-medium text-gray-700 transition-all"
+              >
+                Xóa bộ lọc
+              </button>
+            )}
+
+            {/* Results Count */}
+            <div className="ml-auto text-sm text-gray-600 flex items-center">
+              <span className="font-semibold text-blue-600">{filteredPassages.length}</span>
+              <span className="ml-1">/ {passages.length} bài đọc</span>
+            </div>
+          </div>
+        </div>
+
+      {loading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[...Array(6)].map((_, i) => (
+            <SkeletonCard key={i} />
+          ))}
+        </div>
+      ) : filteredPassages.length === 0 ? (
+        <div className="text-center py-16">
+          <div className="text-6xl mb-4">📚</div>
+          <p className="text-xl font-semibold text-gray-700 mb-2">
+            {searchTerm || selectedDifficulty !== 'all' || selectedTopic !== 'all'
+              ? 'Không tìm thấy bài đọc phù hợp'
+              : 'Chưa có bài đọc nào'}
+          </p>
+          {(searchTerm || selectedDifficulty !== 'all' || selectedTopic !== 'all') && (
+            <button
+              onClick={() => {
+                setSearchTerm('');
+                setSelectedDifficulty('all');
+                setSelectedTopic('all');
+              }}
+              className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+            >
+              Xóa bộ lọc
+            </button>
+          )}
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {passages.map((passage) => (
+          {filteredPassages.map((passage) => (
             <div
               key={passage.id}
               className="group bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden cursor-pointer transform hover:-translate-y-2 border-2 border-transparent hover:border-blue-300"
