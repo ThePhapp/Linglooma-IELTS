@@ -1,4 +1,4 @@
-# 🌸 Linglooma IELTS - AI-Powered IELTS Learning Platform
+# 🌸 Linglooma - AI-Powered English Learning Platform
 
 <div align="center">
 
