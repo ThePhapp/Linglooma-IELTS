@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import axios from '@/utils/axios.customize';
 
 const SpeakingHistory = () => {
@@ -7,6 +7,7 @@ const SpeakingHistory = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const { questionId } = useParams();
 
   useEffect(() => {
     fetchSpeakingHistory();
@@ -21,20 +22,32 @@ const SpeakingHistory = () => {
 
     try {
       setLoading(true);
+      console.log('📡 Fetching speaking history...');
+      
       // API lấy lịch sử speaking của user
-      const response = await axios.get('/api/lessons/results/history', {
+      // axios.customize đã tự động return response.data
+      const data = await axios.get('/api/lessons/results/history', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
       });
 
-      if (response.data) {
-        setResults(response.data);
+      console.log('✅ Received data:', data);
+      console.log('📊 Number of records:', Array.isArray(data) ? data.length : 'Not an array');
+
+      if (data && Array.isArray(data)) {
+        setResults(data);
+        console.log('✅ Set results with', data.length, 'records');
+      } else if (data) {
+        console.warn('⚠️ Data is not an array:', data);
+        setResults([]);
       } else {
+        console.error('❌ No data received');
         setError('Failed to load speaking history');
       }
     } catch (err) {
-      console.error('Error fetching speaking history:', err);
+      console.error('❌ Error fetching speaking history:', err);
+      console.error('Error response:', err.response);
       if (err.response?.status === 401) {
         alert('Session expired. Please login again.');
         navigate('/login');
@@ -81,8 +94,8 @@ const SpeakingHistory = () => {
     });
   };
 
-  const handleViewDetail = (resultId) => {
-    navigate(`/admin/features/feedback/${resultId}`);
+  const handleViewDetail = (lessonId) => {
+    navigate(`/admin/features/feedback/${1}`);
   };
 
   if (loading) {
@@ -203,7 +216,7 @@ const SpeakingHistory = () => {
 
                 {/* View Detail Button */}
                 <button
-                  onClick={() => handleViewDetail(result.id)}
+                  onClick={() => handleViewDetail(questionId)}
                   className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors duration-200"
                 >
                     View Detailed Feedback

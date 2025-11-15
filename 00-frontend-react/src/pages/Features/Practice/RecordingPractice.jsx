@@ -115,8 +115,8 @@ const RecordingPractice = ({ currentQuestion, referenceText, onScore, currentInd
         setStatus("Results received");
         if (onScore) onScore(data);
 
+        // Backend sẽ tự lấy studentId từ JWT token
         await axios.post(`/api/lessons/results`, {
-          studentId: 1,
           lessonId: lessonId,
           finishedTime: new Date().toISOString(),
           averageScore: data.score,
@@ -124,7 +124,6 @@ const RecordingPractice = ({ currentQuestion, referenceText, onScore, currentInd
         });
 
         await axios.post(`api/questions/results`, {
-          studentId: 1,
           lessonResultId: lessonId,
           questionId: currentIndex + 1,
           ieltsBand: data.score,
@@ -140,7 +139,6 @@ const RecordingPractice = ({ currentQuestion, referenceText, onScore, currentInd
           questionResultId: 1,
           lessonResultId: lessonId,
           questionId: currentIndex + 1,
-          studentId: 1,
         });
 
       } else {

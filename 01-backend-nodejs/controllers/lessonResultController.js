@@ -1,16 +1,27 @@
 const { insertLessonResult, getLessonResult, getRecentlyLessonResult, getSpeakingHistory } = require('../models/lessonResultModel');
 
 const insertLessonResultController = async (req, res) => {
-  const { studentId, lessonId, finishedTime, averageScore, feedback } = req.body;
-
-  if (!studentId || !lessonId || !finishedTime || averageScore == null) {
-    return res.status(400).json({ message: "Missing parameters" });
-  }
   try {
+    // Lấy studentId từ JWT token thay vì req.body
+    const studentId = req.user?.id;
+    const { lessonId, finishedTime, averageScore, feedback } = req.body;
+
+    if (!studentId) {
+      console.error('❌ No studentId found in JWT token');
+      return res.status(401).json({ message: "Invalid authentication token" });
+    }
+
+    if (!lessonId || !finishedTime || averageScore == null) {
+      console.error('❌ Missing parameters:', { lessonId, finishedTime, averageScore });
+      return res.status(400).json({ message: "Missing parameters" });
+    }
+
+    console.log('📝 Inserting lesson result for studentId:', studentId, 'lessonId:', lessonId);
     const inserted = await insertLessonResult({ studentId, lessonId, finishedTime, averageScore, feedback });
+    console.log('✅ Lesson result inserted successfully:', inserted);
     res.status(201).json(inserted);
   } catch (error) {
-    console.error(error);
+    console.error('❌ Error inserting lesson result:', error);
     res.status(500).json({ message: "Error inserting lesson result" });
   }
 };

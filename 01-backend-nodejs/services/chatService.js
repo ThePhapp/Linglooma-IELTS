@@ -18,11 +18,10 @@ async function askGemini(userMessage, sessionId = 'default') {
     const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
     if (!GEMINI_API_KEY) {
-      console.error('❌ GEMINI_API_KEY not found in environment variables');
-      return "⚠️ API key is not configured. Please check server settings.";
+      console.error('GEMINI_API_KEY not found in environment variables');
+      return "API key is not configured. Please check server settings.";
     }
 
-    // Lấy hoặc tạo conversation history cho session
     if (!conversationHistory.has(sessionId)) {
       conversationHistory.set(sessionId, [
         {
@@ -38,53 +37,99 @@ async function askGemini(userMessage, sessionId = 'default') {
 
     const history = conversationHistory.get(sessionId);
 
-    // Thêm message mới vào history
     history.push({
       role: "user",
       parts: [{ text: userMessage }]
     });
 
     console.log('🤖 Calling Gemini API...');
-    console.log('📝 User message:', userMessage);
+    console.log('📝 User message:', userMessage.substring(0, 50));
     console.log('💬 Conversation length:', history.length);
 
-    const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${GEMINI_API_KEY}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: history,
-          generationConfig: {
-            temperature: 0.7,
-            topK: 40,
-            topP: 0.95,
-            maxOutputTokens: 1024,
+    const model = 'gemini-2.0-flash';
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`;
+    
+    console.log('🔗 Model:', model);
+
+    const res = await fetch(apiUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: history,
+        generationConfig: {
+          temperature: 0.7,
+          topK: 40,
+          topP: 0.95,
+          maxOutputTokens: 1024,
+        },
+        safetySettings: [
+          {
+            category: "HARM_CATEGORY_HARASSMENT",
+            threshold: "BLOCK_MEDIUM_AND_ABOVE"
           },
-          safetySettings: [
-            {
-              category: "HARM_CATEGORY_HARASSMENT",
-              threshold: "BLOCK_MEDIUM_AND_ABOVE"
-            },
-            {
-              category: "HARM_CATEGORY_HATE_SPEECH",
-              threshold: "BLOCK_MEDIUM_AND_ABOVE"
-            }
-          ]
-        }),
-      }
-    );
+          {
+            category: "HARM_CATEGORY_HATE_SPEECH",
+            threshold: "BLOCK_MEDIUM_AND_ABOVE"
+          },
+          {
+            category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+            threshold: "BLOCK_MEDIUM_AND_ABOVE"
+          },
+          {
+            category: "HARM_CATEGORY_DANGEROUS_CONTENT",
+            threshold: "BLOCK_MEDIUM_AND_ABOVE"
+          }
+        ]
+      }),
+    });
+
+    console.log('📡 Response status:', res.status);
 
     if (!res.ok) {
-      const errorData = await res.json().catch(() => ({}));
-      console.error('❌ Gemini API error:', res.status, errorData);
-      throw new Error(`Gemini API error: ${res.status}`);
+      const errorText = await res.text();
+      let errorData;
+      try {
+        errorData = JSON.parse(errorText);
+      } catch {
+        errorData = { message: errorText };
+      }
+      console.error('❌ Gemini API error response:', errorData);
+      
+      if (res.status === 400) {
+        console.error('❌ Bad Request - Check API key or request format');
+      } else if (res.status === 403) {
+        console.error('❌ Forbidden - API key may be invalid or restricted');
+      } else if (res.status === 429) {
+        console.error('❌ Rate limit exceeded - Too many requests');
+      } else if (res.status === 500) {
+        console.error('❌ Gemini server error');
+      }
+      
+      throw new Error(`Gemini API error: ${res.status} - ${errorData.error?.message || errorText}`);
     }
 
     const data = await res.json();
-    const reply =
-      data.candidates?.[0]?.content?.parts?.[0]?.text ||
-      "⚠️ I couldn't generate a response. Please try again.";
+    console.log('📦 Response data:', JSON.stringify(data).substring(0, 200));
+    
+    // Kiểm tra xem có response không
+    if (!data.candidates || data.candidates.length === 0) {
+      console.error('❌ No candidates in response:', data);
+      
+      // Kiểm tra safety ratings
+      if (data.promptFeedback?.blockReason) {
+        console.error('❌ Content blocked by safety filter:', data.promptFeedback.blockReason);
+        return "⚠️ Your message was blocked by safety filters. Please rephrase your question.";
+      }
+      
+      return "⚠️ I couldn't generate a response. Please try rephrasing your question.";
+    }
+
+    const reply = data.candidates[0]?.content?.parts?.[0]?.text;
+    
+    if (!reply) {
+      console.error('❌ No text in response:', data.candidates[0]);
+      return "⚠️ I couldn't generate a response. Please try again.";
+    }
 
     // Lưu response vào history
     history.push({
@@ -107,6 +152,18 @@ async function askGemini(userMessage, sessionId = 'default') {
 
   } catch (err) {
     console.error("❌ Gemini API error:", err);
+    console.error("❌ Error details:", err.message);
+    console.error("❌ Stack trace:", err.stack);
+    
+    // Trả về error message chi tiết hơn
+    if (err.message?.includes('403')) {
+      return "⚠️ API key error. The Gemini API key may be invalid or restricted. Please contact support.";
+    } else if (err.message?.includes('429')) {
+      return "⚠️ Too many requests. Please wait a moment and try again.";
+    } else if (err.message?.includes('API key')) {
+      return "⚠️ API configuration error. Please contact support.";
+    }
+    
     return "⚠️ I'm having trouble connecting right now. Please try again in a moment. If the problem persists, contact support.";
   }
 }

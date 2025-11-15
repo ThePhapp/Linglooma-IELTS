@@ -6,18 +6,27 @@ const {
 } = require("../models/incorrectphonemesModel");
 
 const insertIncorrectPhonemeController = async (req, res) => {
-  const { phoneme: errorMap, questionResultId, lessonResultId, questionId, studentId } = req.body;
-
-  if (!errorMap || !questionResultId || !lessonResultId || !questionId || !studentId) {
-    console.warn("Missing required fields in insert request");
-    return res.status(400).json({ message: "All fields are required" });
-  }
-
   try {
+    // Lấy studentId từ JWT token
+    const studentId = req.user?.id;
+    const { phoneme: errorMap, questionResultId, lessonResultId, questionId } = req.body;
+
+    if (!studentId) {
+      console.error('❌ No studentId found in JWT token');
+      return res.status(401).json({ message: "Invalid authentication token" });
+    }
+
+    if (!errorMap || !questionResultId || !lessonResultId || !questionId) {
+      console.warn("❌ Missing required fields in insert request");
+      return res.status(400).json({ message: "All fields are required" });
+    }
+
+    console.log('📝 Inserting incorrect phonemes for studentId:', studentId, 'questionId:', questionId);
     await insertOrUpdateIncorrectPhonemes(errorMap, questionResultId, lessonResultId, questionId, studentId);
+    console.log('✅ Incorrect phonemes inserted successfully');
     res.status(200).json({ message: "Insert/Update incorrect phonemes successfully" });
   } catch (err) {
-    console.error("Insert/Update incorrect phonemes failed:", err);
+    console.error("❌ Insert/Update incorrect phonemes failed:", err);
     res.status(500).json({ message: "Insert/Update incorrect phonemes failed" });
   }
 };
