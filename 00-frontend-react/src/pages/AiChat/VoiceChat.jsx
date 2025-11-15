@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import MessageBubble from "../../components/MessageBubble";
+import axios from "@/utils/axios.customize";
 
 export default function VoiceChat() {
   const [messages, setMessages] = useState([]);
@@ -92,20 +93,12 @@ export default function VoiceChat() {
     setIsTyping(true);
 
     try {
-      const res = await fetch("/api/chat", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          ...(token && { Authorization: `Bearer ${token}` }),
-        },
-        body: JSON.stringify({ message: newMsg.text }),
-      });
-
-      if (!res.ok) {
-        throw new Error(`HTTP error! status: ${res.status}`);
-      }
-
-      const data = await res.json();
+      const data = await axios.post("/api/chat", 
+        { message: newMsg.text },
+        {
+          headers: token ? { Authorization: `Bearer ${token}` } : {}
+        }
+      );
 
       setMessages((prev) => [
         ...prev,
@@ -122,13 +115,14 @@ export default function VoiceChat() {
       }
     } catch (err) {
       console.error("❌ Error calling API:", err);
+      const errorMessage = err.response?.data?.message || err.response?.data?.error || err.message;
       setMessages((prev) => [
         ...prev,
         {
           id: Date.now() + 1,
           who: "ai",
           type: "text",
-          text: "⚠️ Sorry, I couldn't connect to the server. Please check your connection and try again.",
+          text: `⚠️ Sorry, I couldn't process your request. ${errorMessage || 'Please try again.'}`,
         },
       ]);
     } finally {
@@ -142,25 +136,19 @@ export default function VoiceChat() {
     }
 
     try {
-      const res = await fetch("/api/chat", {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          ...(token && { Authorization: `Bearer ${token}` }),
-        },
+      await axios.delete("/api/chat", {
+        headers: token ? { Authorization: `Bearer ${token}` } : {}
       });
 
-      if (res.ok) {
-        setMessages([
-          {
-            id: Date.now(),
-            who: "ai",
-            type: "text",
-            text: "👋 Conversation cleared! How can I help you today?",
-          }
-        ]);
-        setConversationLength(0);
-      }
+      setMessages([
+        {
+          id: Date.now(),
+          who: "ai",
+          type: "text",
+          text: "👋 Hello! I'm your IELTS AI assistant. How can I help you today?",
+        }
+      ]);
+      setConversationLength(0);
     } catch (err) {
       console.error("❌ Error clearing chat:", err);
       alert("Failed to clear conversation. Please try again.");
