@@ -25,12 +25,12 @@ const HeroSection = () => {
           <div className="space-y-8">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 backdrop-blur-sm shadow-md">
               <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-              <span className="text-sm font-semibold text-gray-700">🎯 Your Path to IELTS Success</span>
+              <span className="text-sm font-semibold text-gray-700">🎯 Your Path to English Success</span>
             </div>
 
             <h1 className="text-5xl lg:text-6xl font-bold leading-tight">
               <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-                Master IELTS
+                Master English
               </span>
               <br />
               <span className="text-gray-800">with Confidence</span>

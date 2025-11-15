@@ -28,7 +28,7 @@ export default function VoiceChat() {
         id: Date.now(),
         who: "ai",
         type: "text",
-        text: "👋 Hello! I'm your IELTS AI assistant. I'm here to help you improve your English and prepare for the IELTS exam. How can I assist you today?",
+        text: "👋 Hello! I'm your English AI assistant. I'm here to help you improve your English skills. How can I assist you today?",
       }
     ]);
   }, []);
@@ -145,7 +145,7 @@ export default function VoiceChat() {
           id: Date.now(),
           who: "ai",
           type: "text",
-          text: "👋 Hello! I'm your IELTS AI assistant. How can I help you today?",
+          text: "👋 Hello! I'm your English AI assistant. How can I help you today?",
         }
       ]);
       setConversationLength(0);
@@ -172,7 +172,7 @@ export default function VoiceChat() {
           </div>
           <div>
             <h1 className="font-bold text-xl bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              IELTS AI Assistant
+              English AI Assistant
             </h1>
             <p className="text-xs text-gray-500">
               {conversationLength > 0 ? `${conversationLength} messages` : "Ready to help"}

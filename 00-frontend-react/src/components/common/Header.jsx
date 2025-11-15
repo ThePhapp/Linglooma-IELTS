@@ -16,7 +16,7 @@ const Header = () => {
             <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
               Linglooma
             </h1>
-            <p className="text-xs text-gray-500">IELTS Excellence</p>
+            <p className="text-xs text-gray-500">English Excellence</p>
           </div>
         </div>
         

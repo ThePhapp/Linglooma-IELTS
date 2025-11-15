@@ -21,7 +21,7 @@ const Footer = () => {
     Resources: [
       { name: 'Help Center', href: '#' },
       { name: 'Study Guide', href: '#' },
-      { name: 'IELTS Tips', href: '#' },
+      { name: 'English Tips', href: '#' },
       { name: 'FAQ', href: '#' }
     ],
     Legal: [
@@ -45,11 +45,11 @@ const Footer = () => {
               </div>
               <div>
                 <h3 className="text-2xl font-bold">Linglooma</h3>
-                <p className="text-sm text-gray-300">IELTS Excellence</p>
+                <p className="text-sm text-gray-300">English Excellence</p>
               </div>
             </div>
             <p className="text-gray-300 mb-6 leading-relaxed">
-              Master your IELTS exam with AI-powered feedback, comprehensive practice materials, and personalized learning paths.
+              Master your English exam with AI-powered feedback, comprehensive practice materials, and personalized learning paths.
             </p>
             
             {/* Contact Info */}
@@ -92,7 +92,7 @@ const Footer = () => {
         {/* Newsletter Section */}
         <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 mb-12">
           <div className="max-w-2xl mx-auto text-center">
-            <h3 className="text-2xl font-bold mb-3">Stay Updated with IELTS Tips</h3>
+            <h3 className="text-2xl font-bold mb-3">Stay Updated with English Tips</h3>
             <p className="text-gray-300 mb-6">
               Subscribe to our newsletter for exclusive study materials and exam strategies
             </p>
@@ -113,7 +113,7 @@ const Footer = () => {
         <div className="border-t border-white/10 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-gray-300 text-sm">
-              © {currentYear} Linglooma. Made with <Heart className="w-4 h-4 inline text-red-400 fill-red-400" /> for IELTS learners worldwide
+              © {currentYear} Linglooma. Made with <Heart className="w-4 h-4 inline text-red-400 fill-red-400" /> for English learners worldwide
             </p>
             
             {/* Social Media Links */}

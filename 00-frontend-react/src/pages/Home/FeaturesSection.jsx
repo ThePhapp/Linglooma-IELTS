@@ -24,7 +24,7 @@ const FeaturesSection = () => {
     {
       icon: BookOpen,
       title: "Reading Mastery",
-      description: "Comprehensive reading materials with real IELTS passages. Practice with diverse topics and improve comprehension skills.",
+      description: "Comprehensive reading materials with real passages. Practice with diverse topics and improve comprehension skills.",
       gradient: "bg-gradient-to-br from-blue-500 to-cyan-500",
       iconColor: "text-white"
     },
@@ -66,7 +66,7 @@ const FeaturesSection = () => {
     {
       icon: Award,
       title: "Expert Resources",
-      description: "Access premium IELTS materials curated by experienced instructors. Learn strategies and tips from top scorers.",
+      description: "Access premium English materials curated by experienced instructors. Learn strategies and tips from top scorers.",
       gradient: "bg-gradient-to-br from-red-500 to-pink-500",
       iconColor: "text-white"
     },
@@ -90,11 +90,11 @@ const FeaturesSection = () => {
           <h2 className="text-4xl lg:text-5xl font-bold text-gray-800 mb-4">
             Everything You Need to{' '}
             <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-              Excel in IELTS
+              Excel in English
             </span>
           </h2>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Master all four IELTS skills with our comprehensive platform designed for success
+            Master all four English skills with our comprehensive platform designed for success
           </p>
         </div>
         

@@ -5,7 +5,6 @@ const ScoreBadge = ({ level, score }) => {
     return 'bg-green-600';
   };
 
-  // Nếu score <= 10 thì không thêm %, giả sử điểm IELTS
   const displayScore = score > 10 ? `${score}%` : score;
 
   return (

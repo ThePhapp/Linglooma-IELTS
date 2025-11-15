@@ -22,7 +22,7 @@ const LessonSpeaking = () => {
                                     Speaking Practice Lessons
                                 </h1>
                                 <p className="text-white/90 mt-1">
-                                    Choose a topic and start practicing your IELTS speaking skills
+                                    Choose a topic and start practicing your English speaking skills
                                 </p>
                             </div>
                         </div>

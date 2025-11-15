@@ -10,7 +10,6 @@ export default function MessageBubble({ msg }) {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  // Simple markdown-like formatting
   const formatText = (text) => {
     if (!text) return "";
     
@@ -22,10 +21,8 @@ export default function MessageBubble({ msg }) {
     text = text.replace(/\*(.*?)\*/g, '<em>$1</em>');
     text = text.replace(/_(.*?)_/g, '<em>$1</em>');
     
-    // Code: `text`
     text = text.replace(/`(.*?)`/g, '<code class="bg-gray-100 px-1.5 py-0.5 rounded text-sm font-mono text-purple-600">$1</code>');
     
-    // Lists: - item
     text = text.replace(/^- (.+)$/gm, '<li class="ml-4">• $1</li>');
     
     return text;

@@ -162,12 +162,10 @@ const ReadingList = () => {
       } else if (Array.isArray(response) && response.length > 0) {
         setPassages(response);
       } else {
-        // fallback to sample data
         setPassages(SAMPLE_PASSAGES);
       }
     } catch (error) {
       console.error('Error fetching passages:', error);
-      // Nếu API lỗi, vẫn hiển thị sample data
       setPassages(SAMPLE_PASSAGES);
     } finally {
       setLoading(false);

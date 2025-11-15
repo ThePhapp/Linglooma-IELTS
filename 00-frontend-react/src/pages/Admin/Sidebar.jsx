@@ -33,7 +33,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                             <h2 className="text-xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
                                 Linglooma
                             </h2>
-                            <p className="text-xs text-slate-400">IELTS Learning Platform</p>
+                            <p className="text-xs text-slate-400">English Learning Platform</p>
                         </div>
                     </div>
                     {/* Close button for mobile */}

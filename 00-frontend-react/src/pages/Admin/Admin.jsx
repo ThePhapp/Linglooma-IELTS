@@ -42,7 +42,7 @@ const Admin = () => {
                         )}
                     </button>
                     <div className="flex-1">
-                        <h1 className="text-lg font-semibold text-gray-800">Linglooma IELTS Platform</h1>
+                        <h1 className="text-lg font-semibold text-gray-800">Linglooma English Platform</h1>
                     </div>
                 </div>
 

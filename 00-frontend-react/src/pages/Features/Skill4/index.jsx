@@ -14,7 +14,7 @@ const Skill4 = () => {
                             <PracticeCard
                                 title="Listening Practice"
                                 emoji="🎧"
-                                description="Immerse yourself in a variety of real-life IELTS listening scenarios — from academic lectures to everyday conversations. Enhance your focus, improve your vocabulary, and master tricky question types."
+                                description="Immerse yourself in a variety of real-life English listening scenarios — from academic lectures to everyday conversations. Enhance your focus, improve your vocabulary, and master tricky question types."
                                 gradient="from-pink-500 to-rose-600"
                                 bgColor="bg-pink-50"
                             />
@@ -22,7 +22,7 @@ const Skill4 = () => {
                             <PracticeCard
                                 title="Speaking Practice"
                                 emoji="🎤"
-                                description="Boost your confidence and fluency by practicing real IELTS speaking topics. Record, review, and refine your responses with AI-powered feedback. Learn to express your ideas clearly and naturally."
+                                description="Boost your confidence and fluency by practicing real English speaking topics. Record, review, and refine your responses with AI-powered feedback. Learn to express your ideas clearly and naturally."
                                 gradient="from-purple-500 to-violet-600"
                                 bgColor="bg-purple-50"
                             />
@@ -38,7 +38,7 @@ const Skill4 = () => {
                             <PracticeCard
                                 title="Writing Practice"
                                 emoji="✍️"
-                                description="Master the art of essay writing with structured tasks tailored to the IELTS format. From analyzing data in Task 1 to constructing arguments in Task 2, you'll learn to plan, draft, and polish your writing."
+                                description="Master the art of essay writing with structured tasks tailored to the English format. From analyzing data in Task 1 to constructing arguments in Task 2, you'll learn to plan, draft, and polish your writing."
                                 gradient="from-green-500 to-emerald-600"
                                 bgColor="bg-green-50"
                             />

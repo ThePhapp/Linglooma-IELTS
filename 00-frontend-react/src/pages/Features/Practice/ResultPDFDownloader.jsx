@@ -70,7 +70,7 @@ const ResultPDFDownloader = ({ scoreData }) => {
 
     // Title
     doc.setFontSize(18);
-    doc.text("IELTS Speaking Result", 14, 20);
+    doc.text("English Speaking Result", 14, 20);
 
     // Table
     autoTable(doc, {

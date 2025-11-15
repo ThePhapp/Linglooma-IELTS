@@ -219,7 +219,7 @@ const PronunciationFeedback = () => {
                 {averageScore >= 7 && (
                   <>
                     <li>Tiếp tục luyện với tốc độ nói tự nhiên hơn.</li>
-                    <li>Thử luyện tập với các bài phỏng vấn IELTS thực tế.</li>
+                    <li>Thử luyện tập với các bài phỏng vấn English thực tế.</li>
                   </>
                 )}
               </ul>

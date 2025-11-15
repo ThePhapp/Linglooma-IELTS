@@ -14,7 +14,7 @@ const Skill4Header = () => {
                 </div>
                 
                 <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-4 leading-tight">
-                    IELTS 4-Skill Training
+                    English 4-Skill Training
                 </h1>
                 
                 <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-6 py-3 rounded-full">
@@ -25,7 +25,7 @@ const Skill4Header = () => {
                 </div>
 
                 <p className="mt-5 text-white/90 text-base max-w-2xl leading-relaxed">
-                    Choose your practice path and start improving your IELTS skills today. 
+                    Choose your practice path and start improving your English skills today. 
                     Each module is designed to help you achieve your target score.
                 </p>
             </div>

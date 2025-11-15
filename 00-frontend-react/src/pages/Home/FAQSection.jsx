@@ -34,11 +34,11 @@ const FAQSection = () => {
   const faqItems = [
     {
       question: "What is Linglooma?",
-      answer: "Linglooma is a comprehensive IELTS preparation platform that helps students master all four skills (Reading, Writing, Listening, and Speaking) for the IELTS exam. We use AI-powered feedback and personalized learning paths to accelerate your progress."
+      answer: "Linglooma is a comprehensive English preparation platform that helps students master all four skills (Reading, Writing, Listening, and Speaking) for the English exam. We use AI-powered feedback and personalized learning paths to accelerate your progress."
     },
     {
       question: "How does the AI feedback system work?",
-      answer: "Our advanced AI analyzes your performance in real-time across all four IELTS skills. For speaking, it evaluates pronunciation and fluency. For writing, it checks grammar, coherence, and vocabulary. You receive instant, detailed feedback with specific improvement suggestions."
+      answer: "Our advanced AI analyzes your performance in real-time across all four English skills. For speaking, it evaluates pronunciation and fluency. For writing, it checks grammar, coherence, and vocabulary. You receive instant, detailed feedback with specific improvement suggestions."
     },
     {
       question: "What features are included in Linglooma?",
@@ -46,7 +46,7 @@ const FAQSection = () => {
     },
     {
       question: "How can I track my progress?",
-      answer: "You can track your progress through our Smart Analytics Dashboard, which provides detailed insights into your performance across all four IELTS skills. View your improvement trends, identify weaknesses, monitor your practice time, and see your predicted band scores."
+      answer: "You can track your progress through our Smart Analytics Dashboard, which provides detailed insights into your performance across all four English skills. View your improvement trends, identify weaknesses, monitor your practice time, and see your predicted band scores."
     },
     {
       question: "Is Linglooma free to use?",
@@ -73,7 +73,7 @@ const FAQSection = () => {
             </span>
           </h2>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Everything you need to know about Linglooma IELTS preparation
+            Everything you need to know about English preparation
           </p>
         </div>
         

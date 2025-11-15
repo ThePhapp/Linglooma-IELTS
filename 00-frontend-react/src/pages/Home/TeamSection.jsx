@@ -67,18 +67,6 @@ const TeamSection = () => {
       role: "Backend Developer",
       description: "Focused on backend architecture and system optimization"
     },
-    {
-      image: "/images/img_4950742717217545770443287342289213603571812nfotor2025051110286_1.png",
-      name: "Phạm Thế Hùng",
-      role: "Backend Engineer",
-      description: "Building scalable server-side solutions and API integrations"
-    },
-    {
-      image: "/images/img_downloadfotor20250511103821_1.png",
-      name: "Nguyễn Thành Minh",
-      role: "Frontend Developer",
-      description: "Passionate about creating responsive and interactive web applications"
-    }
   ];
 
   return (
@@ -96,7 +84,7 @@ const TeamSection = () => {
             </span>
           </h2>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            A passionate team dedicated to helping you achieve your IELTS goals
+            A passionate team dedicated to helping you achieve your English goals
           </p>
         </div>
         
