@@ -69,7 +69,7 @@ const PageRegister = () => {
 
         setIsLoading(true);
         try {
-            const res = await axios.post(`/api/register`, { email, password });
+            const res = await axios.post(`/api/register`, { email: email.trim().toLowerCase(), password });
             if (res.success) {
                 toast.success("Account created successfully! Please login.");
                 navigate("/login");

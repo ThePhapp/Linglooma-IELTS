@@ -53,6 +53,17 @@ app.get("/ping", (req, res) => {
   res.status(200).json({ status: "ok", timestamp: new Date().toISOString() });
 });
 
+// Health check - kiểm tra DB connectivity
+const db = require('./db');
+app.get("/api/health", async (req, res) => {
+  try {
+    await db.query('SELECT 1');
+    res.status(200).json({ status: "ok", db: "connected", timestamp: new Date().toISOString() });
+  } catch (err) {
+    res.status(500).json({ status: "error", db: "disconnected", error: err.message });
+  }
+});
+
 // -------------------
 // Public routes (không cần JWT)
 app.use("/api/users", userRoutes); // chứa /register, /login

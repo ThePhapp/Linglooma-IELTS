@@ -40,7 +40,7 @@ const PageLogin = () => {
         
         setIsLoading(true);
         try {
-            const res = await axios.post(`/api/login`, { email, password });
+            const res = await axios.post(`/api/login`, { email: email.trim().toLowerCase(), password });
             console.log("res", res);
 
             if (res.success === true) {

@@ -6,7 +6,8 @@ const jwt = require("jsonwebtoken");
 
 
 exports.register = async (req, res) => {
-  const { email, password } = req.body;
+  const email = (req.body.email || '').trim().toLowerCase();
+  const { password } = req.body;
 
   if (!email || !password) {
     return res.status(400).json({ message: "All fields are required" });
@@ -33,20 +34,24 @@ exports.register = async (req, res) => {
 };
 
 exports.login = async (req, res) => {
-  const { email, password } = req.body;
+  const email = (req.body.email || '').trim().toLowerCase();
+  const { password } = req.body;
 
   if (!email || !password) {
     return res.status(400).json({ message: "All fields are required" });
   }
 
+  console.log(`[LOGIN] Attempt for email: ${email}`);
   try {
     const userResult = await User.findUserByEmail(email);
 
     if (userResult.rows.length === 0) {
-      return res.status(401).json({ msg: 'Email or password is wrong' });
+      console.log(`[LOGIN] ❌ Email not found in DB: ${email}`);
+      return res.status(401).json({ msg: 'Email or password is wrong', success: false });
     }
 
     const user = userResult.rows[0];
+    console.log(`[LOGIN] User found: ${user.email}, has password: ${!!user.password}`);
 
     // So sánh password gốc với hash đã lưu
     const isMatch = await bcrypt.compare(password, user.password);
@@ -82,10 +87,11 @@ exports.login = async (req, res) => {
         }
       });
     } else {
-      res.status(401).json({ msg: 'Retriving user failed' });
+      console.log(`[LOGIN] ❌ Password mismatch for email: ${email}`);
+      res.status(401).json({ msg: 'Email or password is wrong', success: false });
     }
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ msg: 'Login failed' });
+    console.error('[LOGIN] ❌ Error:', err.message);
+    res.status(500).json({ msg: 'Login failed', error: err.message });
   }
 };
