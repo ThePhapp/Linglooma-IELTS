@@ -48,6 +48,11 @@ const readingRoutes = require("./routes/readingRoutes.js");
 const writingRoutes = require("./routes/writingRoutes.js");
 const chatRoutes = require("./routes/chatRoutes.js");
 
+// Ping endpoint - giữ server Render không bị sleep
+app.get("/ping", (req, res) => {
+  res.status(200).json({ status: "ok", timestamp: new Date().toISOString() });
+});
+
 // -------------------
 // Public routes (không cần JWT)
 app.use("/api/users", userRoutes); // chứa /register, /login
